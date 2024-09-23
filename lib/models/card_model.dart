@@ -15,8 +15,10 @@ class CardModel {
   final String venue;
   final String? category;
   final String? cardImage;
+  final String id;
 
   CardModel({
+    required this.id,
     required this.name,
     required this.industry,
     required this.sector,
@@ -53,6 +55,7 @@ class CardModel {
       venue: json['venue'],
       category: json['category'],
       cardImage: json['cardImage'],
+      id: json['_id']
     );
   }
 

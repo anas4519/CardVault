@@ -130,7 +130,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             date: displayList[index].date,
                             venue: displayList[index].venue,
                             category: displayList[index].category,
-                            cardImage: '${Constants.uri}${displayList[index].cardImage!}', // Update this with the actual image URL
+                            cardImage: '${Constants.uri}${displayList[index].cardImage!}',
+                            id: displayList[index].id, // Update this with the actual image URL
                           ),
                         ),
                       );

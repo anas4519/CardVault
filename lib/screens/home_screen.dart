@@ -110,6 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                         Navigator.of(context)
                                             .push(MaterialPageRoute(
                                                 builder: (ctx) => CardDetails(
+                                                      id: card.id,
                                                       name: card.name,
                                                       industry: card.industry,
                                                       sector: card.sector,

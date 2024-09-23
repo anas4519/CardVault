@@ -1,5 +1,9 @@
+import 'package:business_card_manager/constants/constants.dart';
+import 'package:business_card_manager/screens/home_screen.dart';
+import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:http/http.dart' as http;
 
 class CardDetails extends StatefulWidget {
   final String name;
@@ -18,6 +22,7 @@ class CardDetails extends StatefulWidget {
   final DateTime date;
   final String venue;
   final String? category;
+  final String id;
 
   const CardDetails({
     super.key,
@@ -25,7 +30,6 @@ class CardDetails extends StatefulWidget {
     required this.industry,
     required this.sector,
     required this.companyName,
-
     this.designation,
     this.companyAddress,
     this.personalAddress,
@@ -36,7 +40,9 @@ class CardDetails extends StatefulWidget {
     this.whatsapp,
     required this.date,
     required this.venue,
-    this.category, required this.cardImage,
+    required this.id,
+    this.category,
+    required this.cardImage,
   });
 
   @override
@@ -63,32 +69,80 @@ class _CardDetailsState extends State<CardDetails> {
     }
   }
 
-Widget _buildDetailRow(String label, String value) {
-  return Row(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      // Label Text
-      Text(
-        label,
-        style: const TextStyle(fontSize: 14),
-      ),
-      Spacer(),
-      // Flexible widget to allow value to wrap and align properly
-      Expanded(
-        child: Align(
-          alignment: Alignment.centerRight,
-          child: SelectableText(
-            value,
-            style: const TextStyle(fontSize: 14),
-            textAlign: TextAlign.start,
+  Widget _buildDetailRow(String label, String value) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Label Text
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14),
+        ),
+        const Spacer(),
+        // Flexible widget to allow value to wrap and align properly
+        Expanded(
+          child: Align(
+            alignment: Alignment.centerRight,
+            child: SelectableText(
+              value,
+              style: const TextStyle(fontSize: 14),
+              textAlign: TextAlign.start,
+            ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
 
+  Future<void> _deleteCard() async {
+    final response = await http.delete(
+      Uri.parse(
+          '${Constants.uri}/card/${widget.id}'), // Adjust the URL as needed
+    );
 
+    if (response.statusCode == 200) {
+      // Optionally, show a success message
+      showSnackBar(context, 'Card deleted successfully');
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+        (Route<dynamic> route) => false,
+      );
+    } else {
+      // Show an error message
+      showSnackBar(context, 'Failed to delete card');
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final bool? confirmed = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this card?'),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false); // User pressed No
+              },
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true); // User pressed Yes
+              },
+              child: const Text('Yes'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed == true) {
+      _deleteCard(); // Call the delete function if confirmed
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -203,33 +257,34 @@ Widget _buildDetailRow(String label, String value) {
                 ],
               ),
             ),
-            SizedBox(height: screenHeight*0.1,),
+            SizedBox(
+              height: screenHeight * 0.1,
+            ),
             Center(
               child: SizedBox(
-                    width: screenWidth * 0.8, // 80% of screen width
-                    child: TextButton(
-                      onPressed: () {
-                        
-                        
-                      },
-                      style: ButtonStyle(
-                        backgroundColor: WidgetStateProperty.all(Colors.redAccent),
-                        foregroundColor: WidgetStateProperty.all(Colors.white),
-                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(
-                                8.0), // Smaller border radius
-                          ),
-                        ),
-                        padding: WidgetStateProperty.all<EdgeInsets>(
-                          const EdgeInsets.symmetric(
-                              vertical: 15.0), // Increase button height
-                        ),
+                width: screenWidth * 0.8, // 80% of screen width
+                child: TextButton(
+                  onPressed: () {
+                    _confirmDelete();
+                  },
+                  style: ButtonStyle(
+                    backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                    foregroundColor: WidgetStateProperty.all(Colors.white),
+                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                      RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.circular(8.0), // Smaller border radius
                       ),
-                      child:
-                          const Text('Delete Card', style: TextStyle(fontSize: 16)),
+                    ),
+                    padding: WidgetStateProperty.all<EdgeInsets>(
+                      const EdgeInsets.symmetric(
+                          vertical: 15.0), // Increase button height
                     ),
                   ),
+                  child:
+                      const Text('Delete Card', style: TextStyle(fontSize: 16)),
+                ),
+              ),
             ),
           ],
         ),
