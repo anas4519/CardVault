@@ -1,6 +1,5 @@
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/providers/user.dart';
-import 'package:business_card_manager/screens/auth/otp_screen.dart';
 import 'package:business_card_manager/screens/home_screen.dart';
 import 'package:business_card_manager/screens/onboarding.dart';
 import 'package:business_card_manager/services/auth_service.dart';

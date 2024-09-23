@@ -1,7 +1,11 @@
+import 'dart:convert';
 import 'package:business_card_manager/constants/constants.dart';
+import 'package:business_card_manager/providers/user.dart';
 import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/models/card_model.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -11,24 +15,46 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> {
-  
+  List<CardModel> displayList = [];
+  List<CardModel> allCards = []; // Store all cards fetched from API
 
-  static List<CardModel> displayList = List.from(Constants.dummyList);
+  @override
+  void initState() {
+    super.initState();
+    fetchUserCards();
+  }
+
+  Future<void> fetchUserCards() async {
+    final userId = Provider.of<UserProvider>(context, listen: false).user.id;
+    try {
+      final response =
+          await http.get(Uri.parse('${Constants.uri}/card/user/$userId'));
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
+        allCards = data.map((json) => CardModel.fromJson(json)).toList();
+        setState(() {
+          displayList = allCards; // Initialize displayList with all fetched cards
+        });
+      } else {
+        throw Exception('Failed to load cards');
+      }
+    } catch (error) {
+      // Handle error (e.g., show a message to the user)
+      print(error);
+    }
+  }
 
   void updateList(String value) {
     setState(() {
-      displayList = Constants.dummyList
-          .where((card) =>
-              card.name.toLowerCase().contains(value.toLowerCase()) ||
-              card.companyName.toLowerCase().contains(value.toLowerCase()) ||
-              card.industry.toLowerCase().contains(value.toLowerCase()) ||
-              (card.designation?.toLowerCase() ?? '')
-                  .contains(value.toLowerCase()) ||
-              card.sector.toLowerCase().contains(value.toLowerCase()) ||
-              (card.category?.toLowerCase() ?? '')
-                  .contains(value.toLowerCase()) ||
-              card.venue.toLowerCase().contains(value.toLowerCase()))
-          .toList();
+      displayList = allCards.where((card) {
+        return card.name.toLowerCase().contains(value.toLowerCase()) ||
+            card.companyName.toLowerCase().contains(value.toLowerCase()) ||
+            card.industry.toLowerCase().contains(value.toLowerCase()) ||
+            (card.designation?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            card.sector.toLowerCase().contains(value.toLowerCase()) ||
+            (card.category?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            card.venue.toLowerCase().contains(value.toLowerCase());
+      }).toList();
     });
   }
 
@@ -53,8 +79,9 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Container(
                 height: screenHeight * 0.08,
                 decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(screenWidth * 0.1),
-                    border: Border.all(color: Colors.teal, width: 2)),
+                  borderRadius: BorderRadius.circular(screenWidth * 0.1),
+                  border: Border.all(color: Colors.teal, width: 2),
+                ),
                 child: Row(
                   children: [
                     const SizedBox(width: 12),
@@ -103,6 +130,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             date: displayList[index].date,
                             venue: displayList[index].venue,
                             category: displayList[index].category,
+                            cardImage: '${Constants.uri}${displayList[index].cardImage!}', // Update this with the actual image URL
                           ),
                         ),
                       );

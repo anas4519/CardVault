@@ -6,6 +6,7 @@ class CardDetails extends StatefulWidget {
   final String industry;
   final String sector;
   final String companyName;
+  final String cardImage;
   final String? designation;
   final String? companyAddress;
   final String? personalAddress;
@@ -24,6 +25,7 @@ class CardDetails extends StatefulWidget {
     required this.industry,
     required this.sector,
     required this.companyName,
+
     this.designation,
     this.companyAddress,
     this.personalAddress,
@@ -34,7 +36,7 @@ class CardDetails extends StatefulWidget {
     this.whatsapp,
     required this.date,
     required this.venue,
-    this.category,
+    this.category, required this.cardImage,
   });
 
   @override
@@ -104,7 +106,7 @@ Widget _buildDetailRow(String label, String value) {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-              child: Image.asset('assets/IMG-20240917-WA0011~2.jpg'),
+              child: Image.network(widget.cardImage),
             ),
             SizedBox(height: screenHeight * 0.04),
             Container(
@@ -200,6 +202,34 @@ Widget _buildDetailRow(String label, String value) {
                   ],
                 ],
               ),
+            ),
+            SizedBox(height: screenHeight*0.1,),
+            Center(
+              child: SizedBox(
+                    width: screenWidth * 0.8, // 80% of screen width
+                    child: TextButton(
+                      onPressed: () {
+                        
+                        
+                      },
+                      style: ButtonStyle(
+                        backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                        foregroundColor: WidgetStateProperty.all(Colors.white),
+                        shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                                8.0), // Smaller border radius
+                          ),
+                        ),
+                        padding: WidgetStateProperty.all<EdgeInsets>(
+                          const EdgeInsets.symmetric(
+                              vertical: 15.0), // Increase button height
+                        ),
+                      ),
+                      child:
+                          const Text('Delete Card', style: TextStyle(fontSize: 16)),
+                    ),
+                  ),
             ),
           ],
         ),

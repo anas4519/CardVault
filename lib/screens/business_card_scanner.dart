@@ -1,14 +1,13 @@
 import 'dart:convert';
-
+import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/constants/constants.dart';
-import 'package:business_card_manager/screens/saved_cards.dart';
+import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
-
 import 'package:intl/intl.dart';
 
 class BusinessCardScanner extends StatefulWidget {
@@ -115,7 +114,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
     }
   }
 
-  void _showImageSourceDialog() {
+  void _showImageSourceDialog(BuildContext context) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -260,6 +259,8 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
     return result;
   }
 
+
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -269,16 +270,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
         title: const Text('Scan Card'),
         centerTitle: true,
       ),
-      // floatingActionButton: Padding(
-      //   padding: EdgeInsets.only(
-      //       bottom: screenHeight * 0.05, right: screenWidth * 0.03),
-      //   child: FloatingActionButton(
-      //     onPressed: _showImageSourceDialog,
-      //     backgroundColor: Colors.blue,
-      //     shape: const CircleBorder(),
-      //     child: const Icon(Icons.document_scanner_outlined),
-      //   ),
-      // ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -339,7 +330,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           IconButton(
-                              onPressed: _showImageSourceDialog,
+                              onPressed: () => _showImageSourceDialog(context),
                               icon: const Icon(
                                 Icons.camera_alt_outlined,
                                 size: 50, // Adjust size as needed
@@ -606,6 +597,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                           if (value == null || value.isEmpty) {
                             return 'Please enter the venue where card was recieved';
                           }
+                          return null;
                         },
                       ),
                       SizedBox(height: screenHeight * 0.02),
@@ -639,27 +631,49 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                   width: screenWidth * 0.8, // 80% of screen width
                   child: TextButton(
                     onPressed: () {
-                      final isValid = _formKey.currentState!.validate();
-                      if (isValid && _selectedDate != null && _image != null) {
-                        Navigator.of(context).push(MaterialPageRoute(
-                            builder: (ctx) => SavedCards(
-                                  image: _image!,
-                                  category: _selectedCategory!,
-                                  companyName: _companyNameController.text,
-                                  industry: _selectedIndustry!,
-                                  sector: _selectedSector!,
-                                  designation: _selectedDesignation ?? "",
-                                  name: _nameController.text,
-                                  address: _companyAddressController.text,
-                                  telephone: _telephoneController.text ?? "",
-                                  date: _selectedDate!,
-                                  venue: _cardRecievedVenueCotroller.text,
-                                )));
+                      if (_formKey.currentState?.validate() ?? false) {
+                        if (_image != null) {
+                          ApiService().postData(
+                              _nameController.text,
+                              _selectedIndustry!,
+                              _selectedSector!,
+                              _companyNameController.text,
+                              _cardRecievedVenueCotroller.text,
+                              _selectedDate!,
+                              _image!,
+                              context,
+                              designation: _selectedDesignation,
+                              companyAddress:
+                                  _companyAddressController.text.isNotEmpty
+                                      ? _companyAddressController.text
+                                      : null,
+                              personalAddress:
+                                  _personalAddressController.text.isNotEmpty
+                                      ? _personalAddressController.text
+                                      : null,
+                              email: _emailController.text.isNotEmpty
+                                  ? _emailController.text
+                                  : null,
+                              website: _websiteController.text.isNotEmpty
+                                  ? _websiteController.text
+                                  : null,
+                              telephone: _telephoneController.text.isNotEmpty
+                                  ? _telephoneController.text
+                                  : null,
+                              mobile: _mobilePhoneController.text.isNotEmpty
+                                  ? _mobilePhoneController.text
+                                  : null,
+                              whatsapp: _whatsappController.text.isNotEmpty
+                                  ? _whatsappController.text
+                                  : null,
+                              category: _selectedCategory);
+                        } else {
+                          showSnackBar(context, 'Please select an image');
+                        }
                       }
                     },
                     style: ButtonStyle(
-                      backgroundColor:
-                          WidgetStateProperty.all(Colors.teal),
+                      backgroundColor: WidgetStateProperty.all(Colors.teal),
                       foregroundColor: WidgetStateProperty.all(Colors.white),
                       shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                         RoundedRectangleBorder(
