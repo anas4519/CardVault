@@ -153,6 +153,7 @@ class _CardDetailsState extends State<CardDetails> {
       appBar: AppBar(
         title: Text(widget.companyName),
         centerTitle: true,
+        backgroundColor: Colors.teal,
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.02),

@@ -351,7 +351,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                     children: [
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Category',
+                          labelText: 'Category *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
@@ -380,7 +380,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       TextFormField(
                         controller: _nameController,
                         decoration: InputDecoration(
-                          labelText: 'Name',
+                          labelText: 'Name *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
@@ -395,7 +395,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       SizedBox(height: screenHeight * 0.02),
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Industry',
+                          labelText: 'Industry *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
@@ -422,7 +422,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       SizedBox(height: screenHeight * 0.02),
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
-                          labelText: 'Sector',
+                          labelText: 'Sector *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
@@ -451,7 +451,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       TextFormField(
                         controller: _companyNameController,
                         decoration: InputDecoration(
-                          labelText: 'Company Name',
+                          labelText: 'Company Name *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
@@ -574,8 +574,8 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                           Expanded(
                             child: Text(
                               _selectedDate == null
-                                  ? 'No date selected'
-                                  : 'Selected Date : ${DateFormat('dd-MM-yyyy').format(_selectedDate!)}',
+                                  ? 'No date selected *'
+                                  : 'Selected Date * : ${DateFormat('dd-MM-yyyy').format(_selectedDate!)}',
                             ),
                           ),
                           IconButton(
@@ -588,7 +588,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       TextFormField(
                         controller: _cardRecievedVenueCotroller,
                         decoration: InputDecoration(
-                          labelText: 'Card Recieved Venue',
+                          labelText: 'Card Recieved Venue *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),

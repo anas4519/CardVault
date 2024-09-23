@@ -5,6 +5,7 @@ import 'package:business_card_manager/screens/business_card_scanner.dart';
 import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/screens/search_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
+import 'package:business_card_manager/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -15,6 +16,10 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
+void signOut(BuildContext context) {
+  AuthService().signOut(context);
+}
+
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
@@ -23,20 +28,31 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Card Vault',
+          'CardVault',
           style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
         ),
+        // backgroundColor: Colors.teal,
         centerTitle: true,
+        leading: IconButton(onPressed: (){}, icon: const Icon(Icons.notes_rounded)),
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context)
-                    .push(MaterialPageRoute(builder: (ctx) => SearchScreen()));
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (ctx) => const SearchScreen()));
               },
               icon: const Icon(
                 Icons.search_sharp,
                 size: 30,
+                color: Colors.black,
               )),
+          // IconButton(
+          //     onPressed:(){
+          //       signOut(context);
+          //     },
+          //     icon: const Icon(
+          //       Icons.logout_outlined,
+          //       size: 30,
+          //     )),
         ],
       ),
       floatingActionButton: Padding(
@@ -61,10 +77,10 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 'Saved Cards',
-                style: TextStyle(fontSize: 22),
+                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               SizedBox(
-                height: screenHeight * 0.03,
+                height: screenHeight * 0.01,
               ),
               FutureBuilder<List<CardModel>>(
                 future: ApiService().fetchUserCards(
@@ -81,7 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                     return const Center(
                         child: Text(
-                      'No cards available.',
+                      'No cards added yet.',
                     ));
                   } else {
                     final cards = snapshot.data!;
@@ -95,11 +111,13 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
+                                  
+                                  width: double.infinity,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(
                                         screenWidth * 0.03),
-                                    border: Border.all(
-                                        color: Colors.teal, width: 3),
+                                    // border: Border.all(
+                                    //     color: Colors.teal, width: 3),
                                   ),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(
@@ -136,7 +154,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                       child: Image.network(
                                         '${Constants.uri}${card.cardImage}',
-                                        fit: BoxFit.fill,
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
