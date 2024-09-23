@@ -36,7 +36,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-      systemNavigationBarColor: Colors.grey[200],
+      systemNavigationBarColor: Colors.teal[50],
     ));
 
     return MaterialApp(
@@ -44,9 +44,10 @@ class _MyAppState extends State<MyApp> {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
           textTheme: GoogleFonts.loraTextTheme(),
-          scaffoldBackgroundColor: Colors.grey[200],
+          // scaffoldBackgroundColor: Colors.grey[200],
+          scaffoldBackgroundColor: Colors.teal[50],
           appBarTheme: AppBarTheme(
-            backgroundColor: Colors.grey[200],
+            backgroundColor: Colors.teal[50],
           )),
       home: Provider.of<UserProvider>(context).user.token.isEmpty? const OnboardingScreen(): const HomeScreen(),
     );

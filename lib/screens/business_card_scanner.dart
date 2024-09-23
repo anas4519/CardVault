@@ -3,6 +3,7 @@ import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -82,9 +83,9 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
             toolbarTitle: 'Crop Image',
             toolbarColor: Colors.black,
             toolbarWidgetColor: Colors.white,
-            activeControlsWidgetColor: Colors.blue,
+            activeControlsWidgetColor: Colors.teal,
             lockAspectRatio: false,
-            cropFrameColor: Colors.blue,
+            cropFrameColor: Colors.teal,
           ),
           IOSUiSettings(
             minimumAspectRatio: 1.0,
@@ -259,16 +260,16 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
     return result;
   }
 
-
-
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      backgroundColor: Colors.teal[50],
       appBar: AppBar(
         title: const Text('Scan Card'),
         centerTitle: true,
+        backgroundColor: Colors.teal[50],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -284,35 +285,76 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         _image!,
                         fit: BoxFit.cover,
                       ),
+
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _image = null;
-                              });
-                            },
-                            icon: const Icon(Icons.delete),
-                          ),
-                          IconButton(
-                            onPressed: _cropImage,
-                            icon: const Icon(Icons.crop),
-                          ),
-                          TextButton(
-                            onPressed: () => _extractText(_image!),
-                            style: TextButton.styleFrom(
-                              side: const BorderSide(
-                                  color: Colors.black,
-                                  width: 1.0), // Border color and width
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.teal, // Set background color
+                                shape: BoxShape.rectangle,
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.02)),
+                            child: IconButton(
+                              onPressed: () {
+                                setState(() {
+                                  _image = null;
+                                });
+                              },
+                              icon: const Icon(
+                                Icons.delete,
+                                color: Colors.white,
+                              ),
                             ),
-                            child: const Text(
-                              'Autofill with AI',
-                              style: TextStyle(color: Colors.black),
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                                color: Colors.teal, // Set background color
+                                shape: BoxShape.rectangle,
+                                borderRadius:
+                                    BorderRadius.circular(screenWidth * 0.02)),
+                            child: IconButton(
+                              onPressed: _cropImage,
+                              icon: const Icon(
+                                Icons.crop,
+                                color: Colors.white,
+                              ),
                             ),
-                          )
+                          ),
+                          
                         ],
+                      ),
+                      SizedBox(
+                        height: screenHeight * 0.02,
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.teal[100],
+                            border: Border.all(color: Colors.teal),
+                            borderRadius:
+                                BorderRadius.circular(screenWidth * 0.02)),
+                        width: screenWidth * 0.8, // 80% of screen width
+                        child: TextButton(
+                          onPressed: () => _extractText(_image!),
+                          style: ButtonStyle(
+                            foregroundColor:
+                                WidgetStateProperty.all(Colors.black),
+                            shape:
+                                WidgetStateProperty.all<RoundedRectangleBorder>(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(
+                                    8.0), // Smaller border radius
+                              ),
+                            ),
+                            padding: WidgetStateProperty.all<EdgeInsets>(
+                              const EdgeInsets.symmetric(
+                                  vertical: 15.0), // Increase button height
+                            ),
+                          ),
+                          child: const Text('Autofill with AI',
+                              style: TextStyle(fontSize: 16)),
+                        ),
                       ),
                     ],
                   )
@@ -325,24 +367,39 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       borderRadius: BorderRadius.circular(screenWidth * 0.02),
                       color: Colors.teal[50],
                     ), // Light background color
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          IconButton(
-                              onPressed: () => _showImageSourceDialog(context),
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 50, // Adjust size as needed
-                                color: Colors.teal,
-                              )),
-                          const Text('No image selected')
-                        ],
+                    child: Container(
+                      width: screenWidth*0.85,
+                      height: screenHeight*0.25,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(screenWidth*0.02),
+                        border: Border.all(
+                          color: Colors.teal,
+                          width: 2
+                        )
+                      ),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                                onPressed: () => _showImageSourceDialog(context),
+                                icon: const Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 50, // Adjust size as needed
+                                  color: Colors.teal,
+                                )),
+                            const Text('No image selected')
+                          ],
+                        ),
                       ),
                     ),
                   ),
 
-                const SizedBox(height: 20),
+                SizedBox(height: screenHeight*0.02),
+                Divider(
+                  
+                ),
+                SizedBox(height: screenHeight*0.04),
 
                 // Form starts here
                 Form(

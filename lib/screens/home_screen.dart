@@ -7,6 +7,7 @@ import 'package:business_card_manager/screens/search_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/services/auth_service.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -27,13 +28,18 @@ class _HomeScreenState extends State<HomeScreen> {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           'CardVault',
-          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 26),
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w500,
+            fontSize: 26,
+            
+          ),
         ),
         // backgroundColor: Colors.teal,
         centerTitle: true,
-        leading: IconButton(onPressed: (){}, icon: const Icon(Icons.notes_rounded)),
+        leading:
+            IconButton(onPressed: () {}, icon: const Icon(Icons.notes_rounded)),
         actions: [
           IconButton(
               onPressed: () {
@@ -77,7 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               const Text(
                 'Saved Cards',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 22),
               ),
               SizedBox(
                 height: screenHeight * 0.01,
@@ -111,7 +117,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Container(
-                                  
                                   width: double.infinity,
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(
