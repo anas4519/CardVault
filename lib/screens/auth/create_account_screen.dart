@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'package:business_card_manager/screens/auth/otp_screen.dart';
+import 'package:http/http.dart' as http;
+import 'package:business_card_manager/constants/constants.dart';
 import 'package:flutter/material.dart';
 
 class CreateAccountScreen extends StatefulWidget {
@@ -65,6 +69,46 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       return 'Passwords do not match';
     }
     return null;
+  }
+
+  void _register() {
+    if (_formKey.currentState?.validate() ?? false) {
+      postData(_nameController.text, _emailController.text,
+          _passwordController.text, context);
+    }
+  }
+
+    Future<void> postData(
+      String name, String email, String password, BuildContext context) async {
+    final url = Uri.parse('${Constants.uri}/user/signup');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    final body =
+        json.encode({"fullName": name, "email": email, "password": password});
+
+    print('Sending request with body: $body'); // Add this line for debugging
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        Navigator.of(context).pop();
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (ctx) => VerifyOtp(
+                  email: email,
+                  name: name,
+                  password: password,
+                )));
+      } else {
+        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Exception: $error');
+    }
   }
 
   @override
@@ -184,10 +228,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                     width: screenWidth * 0.8,
                     height: screenHeight * 0.075,
                     child: TextButton(
-                      onPressed: () {
-                        bool isValid = _formKey.currentState!.validate();
-                        if(isValid){}
-                      },
+                      onPressed: _register,
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,

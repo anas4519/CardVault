@@ -1,4 +1,5 @@
 import 'package:business_card_manager/screens/auth/create_account_screen.dart';
+import 'package:business_card_manager/screens/auth/login.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -15,19 +16,19 @@ class OnboardingScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: screenHeight * 0.2,
+              height: screenHeight * 0.15,
             ),
             const Text(
               'All your business cards',
               style: TextStyle(
-                  color: Colors.teal,
+                  // color: Colors.teal,
                   fontWeight: FontWeight.bold,
                   fontSize: 30),
             ),
             const Text(
               'Together in one place!',
               style: TextStyle(
-                  color: Colors.teal,
+                  // color: Colors.teal,
                   fontWeight: FontWeight.bold,
                   fontSize: 30),
             ),
@@ -69,7 +70,9 @@ class OnboardingScreen extends StatelessWidget {
                     width: screenWidth * 0.8,
                     height: screenHeight * 0.075,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> Login()));
+                      },
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.teal,
                         foregroundColor: Colors.white,

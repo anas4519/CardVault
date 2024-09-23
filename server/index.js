@@ -1,6 +1,6 @@
 require("dotenv").config()
 const express = require("express")
-// const userRoute = require("./routes/user")
+const userRoute = require("./routes/user")
 const mongoose = require("mongoose")
 const path = require('path');
 
@@ -12,5 +12,5 @@ mongoose.connect(process.env.MONGO_URL).then((e) => console.log("MongoDB connect
 )
 // app.use(express.urlencoded({extended: true}))
 app.use(express.static(path.join(__dirname, 'public')));
-// app.use('/user', userRoute)
+app.use('/user', userRoute)
 app.listen(PORT, () => console.log(`Server started at PORT:${PORT}`));
