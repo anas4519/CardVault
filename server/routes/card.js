@@ -113,6 +113,7 @@ router.patch('/:id/initialNotes', async (req, res) => {
 router.patch('/:id/additionalNotes', async (req, res) => {
     const { id } = req.params; // Get card id from the URL
     const { additionalNotes } = req.body; // Get initialNotes from the request body
+    
     try {
         const updatedCard = await Card.findByIdAndUpdate(
             id,

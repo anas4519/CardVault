@@ -102,7 +102,7 @@ class ApiService {
     }
   }
 
-  Future<void> updateInitialNotes(String note, String id) async {
+  Future<void> updateInitialNotes(String note, String id, BuildContext context) async {
     final String apiUrl = '${Constants.uri}/card/$id/initialNotes';
 
     try {
@@ -117,7 +117,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        
+        showSnackBar(context, 'Card updated successfully!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');
@@ -129,7 +129,7 @@ class ApiService {
     }
   }
 
-  Future<void> updateAdditionalNotes(String note, String id) async {
+  Future<void> updateAdditionalNotes(String note, String id, BuildContext context) async {
     final String apiUrl = '${Constants.uri}/card/$id/additionalNotes';
 
     try {
@@ -144,7 +144,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        
+        showSnackBar(context, 'Card updated successfully!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');

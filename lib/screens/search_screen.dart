@@ -56,6 +56,10 @@ class _SearchScreenState extends State<SearchScreen> {
             card.sector.toLowerCase().contains(value.toLowerCase()) ||
             (card.category?.toLowerCase() ?? '')
                 .contains(value.toLowerCase()) ||
+            (card.initialNotes?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
+            (card.additionalNotes?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
             card.venue.toLowerCase().contains(value.toLowerCase());
       }).toList();
     });

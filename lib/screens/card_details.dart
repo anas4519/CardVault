@@ -161,7 +161,6 @@ class _CardDetailsState extends State<CardDetails> {
     if (widget.initalNotes != null) {
       _initialnotesController.text = widget.initalNotes!;
     }
-
     if (widget.additionalNotes != null) {
       _additionalNotesController.text = widget.additionalNotes!;
     }
@@ -329,7 +328,7 @@ class _CardDetailsState extends State<CardDetails> {
                     )),
                 IconButton(
                   onPressed: () {
-                    ApiService().updateInitialNotes(_initialnotesController.text, widget.id);
+                    ApiService().updateInitialNotes(_initialnotesController.text, widget.id, context);
                     if (_isEditable) {
                       setState(() {
                         _isEditable = false;
@@ -377,7 +376,7 @@ class _CardDetailsState extends State<CardDetails> {
                 IconButton(
                   onPressed: () {
                     if (_isEditable) {
-                      ApiService().updateAdditionalNotes(_additionalNotesController.text, widget.id);
+                      ApiService().updateAdditionalNotes(_additionalNotesController.text, widget.id, context);
                       setState(() {
                         _isEditable = false;
                       });
