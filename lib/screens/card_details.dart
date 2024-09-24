@@ -1,5 +1,6 @@
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/screens/home_screen.dart';
+import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,6 +24,8 @@ class CardDetails extends StatefulWidget {
   final String venue;
   final String? category;
   final String id;
+  final String? initalNotes;
+  final String? additionalNotes;
 
   const CardDetails({
     super.key,
@@ -42,6 +45,8 @@ class CardDetails extends StatefulWidget {
     required this.venue,
     required this.id,
     this.category,
+    this.initalNotes,
+    this.additionalNotes,
     required this.cardImage,
   });
 
@@ -144,6 +149,32 @@ class _CardDetailsState extends State<CardDetails> {
     }
   }
 
+  bool _isInitialEditable = false;
+  final TextEditingController _initialnotesController = TextEditingController();
+  bool _isEditable = false;
+  final TextEditingController _additionalNotesController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    
+    if (widget.initalNotes != null) {
+      _initialnotesController.text = widget.initalNotes!;
+    }
+
+    if (widget.additionalNotes != null) {
+      _additionalNotesController.text = widget.additionalNotes!;
+    }
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controllers when the widget is disposed
+    _initialnotesController.dispose();
+    _additionalNotesController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -153,15 +184,15 @@ class _CardDetailsState extends State<CardDetails> {
       appBar: AppBar(
         title: Text(widget.companyName),
         centerTitle: true,
-        
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(screenWidth * 0.02),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Center(
-              child: Image.network(widget.cardImage),
+              child: GestureDetector(
+                  onLongPress: () {}, child: Image.network(widget.cardImage)),
             ),
             SizedBox(height: screenHeight * 0.04),
             Container(
@@ -257,6 +288,104 @@ class _CardDetailsState extends State<CardDetails> {
                   ],
                 ],
               ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.04,
+            ),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Initial Notes',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            TextField(
+              controller: _initialnotesController,
+              enabled: _isInitialEditable,
+              maxLines: null,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(screenWidth * 0.04),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isInitialEditable =
+                            !_isInitialEditable; // Toggles edit mode
+                      });
+                    },
+                    icon: Icon(
+                      _isInitialEditable ? Icons.lock_open : Icons.edit,
+                    )),
+                IconButton(
+                  onPressed: () {
+                    ApiService().updateInitialNotes(_initialnotesController.text, widget.id);
+                    if (_isEditable) {
+                      setState(() {
+                        _isEditable = false;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.save_rounded),
+                ),
+              ],
+            ),
+            const Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Additional Notes',
+                style: TextStyle(fontSize: 24),
+              ),
+            ),
+            TextField(
+              controller: _additionalNotesController,
+              enabled: _isEditable,
+              maxLines: null,
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: EdgeInsets.all(screenWidth * 0.04),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(screenWidth * 0.04),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+              style: const TextStyle(fontSize: 16, color: Colors.black),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isEditable = !_isEditable; // Toggles edit mode
+                      });
+                    },
+                    icon: Icon(
+                      _isEditable ? Icons.lock_open : Icons.edit,
+                    )),
+                IconButton(
+                  onPressed: () {
+                    if (_isEditable) {
+                      ApiService().updateAdditionalNotes(_additionalNotesController.text, widget.id);
+                      setState(() {
+                        _isEditable = false;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.save_rounded),
+                ),
+              ],
             ),
             SizedBox(
               height: screenHeight * 0.1,

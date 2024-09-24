@@ -64,6 +64,12 @@ const cardSchema = new Schema({
         type: String,
         required: true
     },
+    initialNotes: {
+        type: String
+    },
+    additionalNotes: {
+        type: String
+    },
     createdBy: {
         type: Schema.Types.ObjectId,
         ref: "user"

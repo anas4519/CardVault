@@ -24,8 +24,8 @@ router.post("/", upload.single("cardImage"), async (req, res) => {
         return res.status(400).json({ success: false, message: "No file uploaded" });
     }
 
-    
-    const { name, industry, sector, companyName, venue, date, designation, companyAddress, personalAddress, email, website, telephone, mobile, whatsapp, category, user_id } = req.body;
+
+    const { name, industry, sector, companyName, venue, date, designation, companyAddress, personalAddress, email, website, telephone, mobile, whatsapp, category, user_id, initialNotes, additionalNotes } = req.body;
 
     try {
         const user = await User.findById(user_id);
@@ -49,10 +49,12 @@ router.post("/", upload.single("cardImage"), async (req, res) => {
             mobile,
             whatsapp,
             category,
+            initialNotes,
+            additionalNotes,
             createdBy: user._id,
             cardImage: `/cards/${req.file.filename}`
         });
-        
+
         return res.json({ success: true, card });
     } catch (error) {
         console.error(error);
@@ -66,7 +68,7 @@ router.get('/user/:createdBy', async (req, res) => {
 
         const allCards = await Card.find({ createdBy })
             .sort({ createdAt: -1 })
-            
+
         return res.json(allCards);
     } catch (error) {
         console.error('Error fetching cards:', error);
@@ -87,6 +89,42 @@ router.delete('/:id', async (req, res) => {
     } catch (error) {
         console.error('Error deleting card:', error);
         return res.status(500).json({ success: false, message: "Failed to delete card" });
+    }
+});
+
+router.patch('/:id/initialNotes', async (req, res) => {
+    const { id } = req.params; // Get card id from the URL
+    const { initialNotes } = req.body; // Get initialNotes from the request body
+    try {
+        const updatedCard = await Card.findByIdAndUpdate(
+            id,
+            { initialNotes: initialNotes },
+            { new: true }
+        );
+        if (!updatedCard) {
+            return res.status(404).json({ message: 'Card not found' });
+        }
+        res.status(200).json(updatedCard);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
+    }
+});
+
+router.patch('/:id/additionalNotes', async (req, res) => {
+    const { id } = req.params; // Get card id from the URL
+    const { additionalNotes } = req.body; // Get initialNotes from the request body
+    try {
+        const updatedCard = await Card.findByIdAndUpdate(
+            id,
+            { additionalNotes: additionalNotes },
+            { new: true }
+        );
+        if (!updatedCard) {
+            return res.status(404).json({ message: 'Card not found' });
+        }
+        res.status(200).json(updatedCard);
+    } catch (error) {
+        res.status(500).json({ message: 'Server error', error });
     }
 });
 

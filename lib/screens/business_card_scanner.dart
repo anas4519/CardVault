@@ -260,6 +260,23 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
     return result;
   }
 
+  // @override
+  // void dispose() {
+  //   _nameController.dispose();
+  //   _cardRecievedVenueCotroller.dispose();
+  //   _initialNotesController.dispose();
+  //   _additionalNotesController.dispose();
+  //   _mobilePhoneController.dispose();
+  //   _websiteController.dispose();
+  //   _telephoneController.dispose();
+  //   _companyAddressController.dispose();
+  //   _personalAddressController.dispose();
+  //   _emailController.dispose();
+  //   _websiteController.dispose();
+  //   _companyAddressController.dispose();
+  //   super.dispose();
+  // }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -285,7 +302,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         _image!,
                         fit: BoxFit.cover,
                       ),
-
                       const SizedBox(height: 12),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -322,7 +338,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               ),
                             ),
                           ),
-                          
                         ],
                       ),
                       SizedBox(
@@ -368,21 +383,19 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       color: Colors.teal[50],
                     ), // Light background color
                     child: Container(
-                      width: screenWidth*0.85,
-                      height: screenHeight*0.25,
+                      width: screenWidth * 0.85,
+                      height: screenHeight * 0.25,
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(screenWidth*0.02),
-                        border: Border.all(
-                          color: Colors.teal,
-                          width: 2
-                        )
-                      ),
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.02),
+                          border: Border.all(color: Colors.teal, width: 2)),
                       child: Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             IconButton(
-                                onPressed: () => _showImageSourceDialog(context),
+                                onPressed: () =>
+                                    _showImageSourceDialog(context),
                                 icon: const Icon(
                                   Icons.camera_alt_outlined,
                                   size: 50, // Adjust size as needed
@@ -395,11 +408,9 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                     ),
                   ),
 
-                SizedBox(height: screenHeight*0.02),
-                Divider(
-                  
-                ),
-                SizedBox(height: screenHeight*0.04),
+                SizedBox(height: screenHeight * 0.02),
+                Divider(),
+                SizedBox(height: screenHeight * 0.04),
 
                 // Form starts here
                 Form(
@@ -660,6 +671,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       SizedBox(height: screenHeight * 0.02),
                       TextFormField(
                         controller: _initialNotesController,
+                        maxLines: null,
                         decoration: InputDecoration(
                           labelText: 'Initial Notes',
                           border: OutlineInputBorder(
@@ -671,6 +683,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       SizedBox(height: screenHeight * 0.02),
                       TextFormField(
                         controller: _additionalNotesController,
+                        maxLines: null,
                         decoration: InputDecoration(
                           labelText: 'Additional Notes',
                           border: OutlineInputBorder(
@@ -700,14 +713,12 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               _image!,
                               context,
                               designation: _selectedDesignation,
-                              companyAddress:
-                                  _companyAddressController.text.isNotEmpty
-                                      ? _companyAddressController.text
-                                      : null,
-                              personalAddress:
-                                  _personalAddressController.text.isNotEmpty
-                                      ? _personalAddressController.text
-                                      : null,
+                              companyAddress: _companyAddressController.text.isNotEmpty
+                                  ? _companyAddressController.text
+                                  : null,
+                              personalAddress: _personalAddressController.text.isNotEmpty
+                                  ? _personalAddressController.text
+                                  : null,
                               email: _emailController.text.isNotEmpty
                                   ? _emailController.text
                                   : null,
@@ -723,7 +734,13 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               whatsapp: _whatsappController.text.isNotEmpty
                                   ? _whatsappController.text
                                   : null,
-                              category: _selectedCategory);
+                              category: _selectedCategory,
+                              initialNotes: _initialNotesController.text.isNotEmpty
+                                  ? _initialNotesController.text
+                                  : null,
+                              additionalNotes: _additionalNotesController.text.isNotEmpty
+                                  ? _additionalNotesController.text
+                                  : null);
                         } else {
                           showSnackBar(context, 'Please select an image');
                         }

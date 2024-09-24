@@ -15,9 +15,7 @@ class ApiService {
     final response =
         await http.get(Uri.parse('${Constants.uri}/card/user/$userID'));
     if (response.statusCode == 200) {
-
       List<dynamic> data = json.decode(response.body);
-      print(data);
       return data.map((json) => CardModel.fromJson(json)).toList();
     } else {
       throw Exception('Failed to load blogs');
@@ -25,24 +23,25 @@ class ApiService {
   }
 
   Future<void> postData(
-    String name,
-    String industry,
-    String sector,
-    String companyName,
-    String venue,
-    DateTime date, // Date is now DateTime, convert to string later
-    File image,
-    BuildContext context, {
-    String? designation,
-    String? companyAddress,
-    String? personalAddress,
-    String? email,
-    String? website,
-    String? telephone,
-    String? mobile,
-    String? whatsapp,
-    String? category,
-  }) async {
+      String name,
+      String industry,
+      String sector,
+      String companyName,
+      String venue,
+      DateTime date, // Date is now DateTime, convert to string later
+      File image,
+      BuildContext context,
+      {String? designation,
+      String? companyAddress,
+      String? personalAddress,
+      String? email,
+      String? website,
+      String? telephone,
+      String? mobile,
+      String? whatsapp,
+      String? category,
+      String? initialNotes,
+      String? additionalNotes}) async {
     final url =
         Uri.parse('${Constants.uri}/card/'); // Replace with your actual URL
 
@@ -72,6 +71,9 @@ class ApiService {
       if (mobile != null) request.fields['mobile'] = mobile;
       if (whatsapp != null) request.fields['whatsapp'] = whatsapp;
       if (category != null) request.fields['category'] = category;
+      if (initialNotes != null) request.fields['initialNotes'] = initialNotes;
+      if (additionalNotes != null)
+        request.fields['additionalNotes'] = additionalNotes;
 
       // Add the image file to the request
       var multipartFile = await http.MultipartFile.fromPath(
@@ -97,6 +99,60 @@ class ApiService {
       }
     } catch (e) {
       showSnackBar(context, 'Error: $e');
+    }
+  }
+
+  Future<void> updateInitialNotes(String note, String id) async {
+    final String apiUrl = '${Constants.uri}/card/$id/initialNotes';
+
+    try {
+      final response = await http.patch(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'initialNotes': note,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        
+      } else {
+        print(
+            'Failed to update initial notes. Status Code: ${response.statusCode}');
+        print(
+            'Response Body: ${response.body}'); // Log the response body for more details
+      }
+    } catch (error) {
+      print('Error updating initial notes: $error');
+    }
+  }
+
+  Future<void> updateAdditionalNotes(String note, String id) async {
+    final String apiUrl = '${Constants.uri}/card/$id/additionalNotes';
+
+    try {
+      final response = await http.patch(
+        Uri.parse(apiUrl),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, String>{
+          'additionalNotes': note,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        
+      } else {
+        print(
+            'Failed to update initial notes. Status Code: ${response.statusCode}');
+        print(
+            'Response Body: ${response.body}'); // Log the response body for more details
+      }
+    } catch (error) {
+      print('Error updating initial notes: $error');
     }
   }
 }

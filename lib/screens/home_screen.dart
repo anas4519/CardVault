@@ -20,6 +20,7 @@ class HomeScreen extends StatefulWidget {
 void signOut(BuildContext context) {
   AuthService().signOut(context);
 }
+bool _isFiltered = false;
 
 class _HomeScreenState extends State<HomeScreen> {
   @override
@@ -81,9 +82,23 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Saved Cards',
-                style: TextStyle(fontSize: 22),
+              Row(
+                children: [
+                  const Text(
+                    'Saved Cards',
+                    style: TextStyle(fontSize: 22),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isFiltered = !_isFiltered;
+                      });
+                    },
+                    icon: Icon(_isFiltered
+                        ? Icons.filter_list_off_rounded
+                        : Icons.filter_list_rounded))
+                ],
               ),
               SizedBox(
                 height: screenHeight * 0.01,
@@ -155,6 +170,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       mobile: card.mobile,
                                                       telephone: card.telephone,
                                                       whatsapp: card.whatsapp,
+                                                      initalNotes: card.initialNotes,
+                                                      additionalNotes: card.additionalNotes,
                                                     )));
                                       },
                                       child: Image.network(

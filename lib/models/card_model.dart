@@ -16,6 +16,8 @@ class CardModel {
   final String? category;
   final String? cardImage;
   final String id;
+  final String? initialNotes;
+  final String? additionalNotes;
 
   CardModel({
     required this.id,
@@ -35,6 +37,8 @@ class CardModel {
     this.category,
     this.whatsapp,
     this.cardImage,
+    this.initialNotes,
+    this.additionalNotes
   });
 
   factory CardModel.fromJson(Map<String, dynamic> json) {
@@ -55,7 +59,9 @@ class CardModel {
       venue: json['venue'],
       category: json['category'],
       cardImage: json['cardImage'],
-      id: json['_id']
+      id: json['_id'],
+      initialNotes: json['initialNotes'],
+      additionalNotes: json['additionalNotes']
     );
   }
 
@@ -77,6 +83,8 @@ class CardModel {
       'venue': venue,
       'category': category,
       'cardImage': cardImage,
+      'initalNotes' : initialNotes,
+      'additionalNotes' : additionalNotes
     };
   }
 }

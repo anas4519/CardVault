@@ -17,7 +17,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<CardModel> displayList = [];
   List<CardModel> allCards = []; // Store all cards fetched from API
-
+  bool _isFiltered = false;
   @override
   void initState() {
     super.initState();
@@ -33,7 +33,8 @@ class _SearchScreenState extends State<SearchScreen> {
         List<dynamic> data = json.decode(response.body);
         allCards = data.map((json) => CardModel.fromJson(json)).toList();
         setState(() {
-          displayList = allCards; // Initialize displayList with all fetched cards
+          displayList =
+              allCards; // Initialize displayList with all fetched cards
         });
       } else {
         throw Exception('Failed to load cards');
@@ -50,9 +51,11 @@ class _SearchScreenState extends State<SearchScreen> {
         return card.name.toLowerCase().contains(value.toLowerCase()) ||
             card.companyName.toLowerCase().contains(value.toLowerCase()) ||
             card.industry.toLowerCase().contains(value.toLowerCase()) ||
-            (card.designation?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.designation?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
             card.sector.toLowerCase().contains(value.toLowerCase()) ||
-            (card.category?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.category?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
             card.venue.toLowerCase().contains(value.toLowerCase());
       }).toList();
     });
@@ -70,9 +73,23 @@ class _SearchScreenState extends State<SearchScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(height: screenHeight * 0.005),
-            const Text(
-              'Search for a Card',
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Row(
+              children: [
+                const Text(
+                  'Search for a Card',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+                ),
+                const Spacer(),
+                IconButton(
+                    onPressed: () {
+                      setState(() {
+                        _isFiltered = !_isFiltered;
+                      });
+                    },
+                    icon: Icon(_isFiltered
+                        ? Icons.filter_list_off_rounded
+                        : Icons.filter_list_rounded))
+              ],
             ),
             SizedBox(height: screenHeight * 0.02),
             Center(
@@ -130,8 +147,12 @@ class _SearchScreenState extends State<SearchScreen> {
                             date: displayList[index].date,
                             venue: displayList[index].venue,
                             category: displayList[index].category,
-                            cardImage: '${Constants.uri}${displayList[index].cardImage!}',
-                            id: displayList[index].id, // Update this with the actual image URL
+                            initalNotes: displayList[index].initialNotes,
+                            additionalNotes: displayList[index].additionalNotes,
+                            cardImage:
+                                '${Constants.uri}${displayList[index].cardImage!}',
+                            id: displayList[index]
+                                .id, // Update this with the actual image URL
                           ),
                         ),
                       );
