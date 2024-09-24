@@ -74,27 +74,25 @@ class _CardDetailsState extends State<CardDetails> {
     }
   }
 
-  Widget _buildDetailRow(String label, String value) {
-    return Row(
+  Future<void> _makePhoneCall(String phoneNumber) async {
+  final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+  
+  if (await canLaunchUrl(callUri)) {
+    await launchUrl(callUri);
+  } else {
+    // You can show an error message if the call can't be initiated
+    print('Could not launch $callUri');
+  }
+}
+  Widget _buildDetailColumn(String label, String value) {
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Label Text
         Text(
           label,
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const Spacer(),
-        // Flexible widget to allow value to wrap and align properly
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: SelectableText(
-              value,
-              style: const TextStyle(fontSize: 14),
-              textAlign: TextAlign.start,
-            ),
-          ),
-        ),
+        SelectableText(value),
       ],
     );
   }
@@ -152,12 +150,13 @@ class _CardDetailsState extends State<CardDetails> {
   bool _isInitialEditable = false;
   final TextEditingController _initialnotesController = TextEditingController();
   bool _isEditable = false;
-  final TextEditingController _additionalNotesController = TextEditingController();
+  final TextEditingController _additionalNotesController =
+      TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    
+
     if (widget.initalNotes != null) {
       _initialnotesController.text = widget.initalNotes!;
     }
@@ -204,86 +203,118 @@ class _CardDetailsState extends State<CardDetails> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildDetailRow('Name', widget.name),
-                  const Divider(color: Colors.grey),
-                  _buildDetailRow('Industry', widget.industry),
-                  const Divider(color: Colors.grey),
-                  _buildDetailRow('Sector', widget.sector),
-                  const Divider(color: Colors.grey),
-                  _buildDetailRow('Company Name', widget.companyName),
-                  const Divider(color: Colors.grey),
+                  _buildDetailColumn('Name', widget.name),
+                  const Divider(
+                    color: Colors.teal,
+                  ),
+                  _buildDetailColumn('Industry', widget.industry),
+                  const Divider(
+                    color: Colors.teal,
+                  ),
+                  _buildDetailColumn('Sector', widget.sector),
+                  const Divider(
+                    color: Colors.teal,
+                  ),
+                  _buildDetailColumn('Company Name', widget.companyName),
+                  const Divider(
+                    color: Colors.teal,
+                  ),
                   if (widget.designation?.isNotEmpty ?? false) ...[
-                    _buildDetailRow('Designation', widget.designation!),
-                    const Divider(color: Colors.grey),
+                    _buildDetailColumn('Designation', widget.designation!),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.companyAddress?.isNotEmpty ?? false) ...[
-                    _buildDetailRow('Company Address', widget.companyAddress!),
-                    const Divider(color: Colors.grey),
+                    _buildDetailColumn(
+                        'Company Address', widget.companyAddress!),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.personalAddress?.isNotEmpty ?? false) ...[
-                    _buildDetailRow(
+                    _buildDetailColumn(
                         'Personal Address', widget.personalAddress!),
-                    const Divider(color: Colors.grey),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.email?.isNotEmpty ?? false) ...[
                     Row(
                       children: [
-                        const Text('Email', style: TextStyle(fontSize: 14)),
+                        _buildDetailColumn('Email', widget.email!),
                         const Spacer(),
-                        InkWell(
-                          onTap: () => _sendEmail(widget.email!),
-                          child: Text(
-                            widget.email!,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
+                        IconButton(
+                            onPressed: () => _sendEmail(widget.email!),
+                            icon: const Icon(
+                              Icons.email,
+                              color: Colors.black,
+                            ))
                       ],
                     ),
-                    const Divider(color: Colors.grey),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.website?.isNotEmpty ?? false) ...[
                     Row(
                       children: [
-                        const Text('Website', style: TextStyle(fontSize: 14)),
+                        _buildDetailColumn('Website', widget.website!),
                         const Spacer(),
-                        InkWell(
-                          onTap: () => _launchURL(widget.website!),
-                          child: Text(
-                            widget.website!,
-                            style: const TextStyle(
-                              fontSize: 14,
-                              color: Colors.blue,
-                              decoration: TextDecoration.underline,
-                            ),
-                          ),
-                        ),
+                        IconButton(
+                            onPressed: () => _launchURL(widget.website!),
+                            icon: const Icon(
+                              Icons.public,
+                              color: Colors.black,
+                            ))
                       ],
                     ),
-                    const Divider(color: Colors.grey),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.telephone?.isNotEmpty ?? false) ...[
-                    _buildDetailRow('Telephone No', widget.telephone!),
-                    const Divider(color: Colors.grey),
+                    Row(
+                      children: [
+                        _buildDetailColumn('Telephone', widget.telephone!),
+                        const Spacer(),
+                        IconButton(
+                            onPressed: ()=>_makePhoneCall(widget.telephone!),
+                            icon: const Icon(
+                              Icons.call,
+                              color: Colors.black,
+                            ))
+                      ],
+                    ),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.mobile?.isNotEmpty ?? false) ...[
-                    _buildDetailRow('Mobile No', widget.mobile!),
-                    const Divider(color: Colors.grey),
+                    Row(
+                      children: [
+                        _buildDetailColumn('Mobile Number', widget.mobile!),
+                        const Spacer(),
+                        IconButton(
+                            onPressed: () => _makePhoneCall(widget.mobile!),
+                            icon: const Icon(
+                              Icons.call,
+                              color: Colors.black,
+                            ))
+                      ],
+                    ),
+                    const Divider(color: Colors.teal),
                   ],
                   if (widget.whatsapp?.isNotEmpty ?? false) ...[
-                    _buildDetailRow('WhatsApp No', widget.whatsapp!),
-                    const Divider(color: Colors.grey),
+                    Row(
+                      children: [
+                        _buildDetailColumn('WhatsApp Number', widget.whatsapp!),
+                        const Spacer(),
+                        IconButton(
+                            onPressed: () => _launchURL(widget.whatsapp!),
+                            icon: const Icon(
+                              Icons.call,
+                              color: Colors.black,
+                            ))
+                      ],
+                    ),
+                    const Divider(color: Colors.teal),
                   ],
-                  _buildDetailRow('Card Recieved Date',
+                  _buildDetailColumn('Card Recieved Date',
                       "${widget.date.day}-${widget.date.month}-${widget.date.year}"),
-                  const Divider(color: Colors.grey),
-                  _buildDetailRow('Card Recieved Venue', widget.venue),
+                  const Divider(color: Colors.teal),
+                  _buildDetailColumn('Card Recieved Venue', widget.venue),
                   if (widget.category?.isNotEmpty ?? false) ...[
-                    const Divider(color: Colors.grey),
-                    _buildDetailRow('Category', widget.category!),
+                    const Divider(color: Colors.teal),
+                    _buildDetailColumn('Category', widget.category!),
                   ],
                 ],
               ),
@@ -304,7 +335,7 @@ class _CardDetailsState extends State<CardDetails> {
               maxLines: null,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.teal[100],
                 contentPadding: EdgeInsets.all(screenWidth * 0.04),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(screenWidth * 0.04),
@@ -328,7 +359,8 @@ class _CardDetailsState extends State<CardDetails> {
                     )),
                 IconButton(
                   onPressed: () {
-                    ApiService().updateInitialNotes(_initialnotesController.text, widget.id, context);
+                    ApiService().updateInitialNotes(
+                        _initialnotesController.text, widget.id, context);
                     if (_isEditable) {
                       setState(() {
                         _isEditable = false;
@@ -352,7 +384,7 @@ class _CardDetailsState extends State<CardDetails> {
               maxLines: null,
               decoration: InputDecoration(
                 filled: true,
-                fillColor: Colors.white,
+                fillColor: Colors.teal[100],
                 contentPadding: EdgeInsets.all(screenWidth * 0.04),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(screenWidth * 0.04),
@@ -376,7 +408,8 @@ class _CardDetailsState extends State<CardDetails> {
                 IconButton(
                   onPressed: () {
                     if (_isEditable) {
-                      ApiService().updateAdditionalNotes(_additionalNotesController.text, widget.id, context);
+                      ApiService().updateAdditionalNotes(
+                          _additionalNotesController.text, widget.id, context);
                       setState(() {
                         _isEditable = false;
                       });
