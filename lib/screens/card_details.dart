@@ -180,7 +180,7 @@ class _CardDetailsState extends State<CardDetails> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.companyName),
+        title: Text(widget.companyName, style: const TextStyle(fontSize: 16),),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

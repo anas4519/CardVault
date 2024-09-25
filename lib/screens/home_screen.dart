@@ -50,7 +50,7 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               _scaffoldKey.currentState?.openDrawer();
             },
-            icon: const Icon(Icons.notes_rounded)),
+            icon: const Icon(Icons.notes_rounded, size: 30,)),
         actions: [
           IconButton(
               onPressed: () {

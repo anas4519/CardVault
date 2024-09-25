@@ -18,8 +18,6 @@ const upload = multer({ storage: storage });
 const router = Router();
 
 router.post("/", upload.single("cardImage"), async (req, res) => {
-    console.log(req.body);
-
     if (!req.file) {
         return res.status(400).json({ success: false, message: "No file uploaded" });
     }

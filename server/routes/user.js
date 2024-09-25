@@ -82,7 +82,7 @@ router.post("/signup", async (req, res) => {
             from: "versevibe45@gmail.com",
             to: email,
             subject: "Verify Your Email - OTP",
-            text: `Your OTP for email verification is: ${otp}. This OTP is valid for 10 minutes.`,
+            text: `Your OTP for email verification on CardVault is: ${otp}. This OTP is valid for 10 minutes.`,
         };
 
         transporter.sendMail(mailOptions, (error, info) => {
