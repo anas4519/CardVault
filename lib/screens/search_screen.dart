@@ -17,7 +17,7 @@ class SearchScreen extends StatefulWidget {
 class _SearchScreenState extends State<SearchScreen> {
   List<CardModel> displayList = [];
   List<CardModel> allCards = []; // Store all cards fetched from API
-  bool _isFiltered = false;
+
   @override
   void initState() {
     super.initState();
@@ -56,13 +56,79 @@ class _SearchScreenState extends State<SearchScreen> {
             card.sector.toLowerCase().contains(value.toLowerCase()) ||
             (card.category?.toLowerCase() ?? '')
                 .contains(value.toLowerCase()) ||
-                (card.initialNotes?.toLowerCase() ?? '')
+            (card.initialNotes?.toLowerCase() ?? '')
                 .contains(value.toLowerCase()) ||
-                (card.additionalNotes?.toLowerCase() ?? '')
+            (card.additionalNotes?.toLowerCase() ?? '')
                 .contains(value.toLowerCase()) ||
-            
             card.venue.toLowerCase().contains(value.toLowerCase());
       }).toList();
+    });
+  }
+
+  void _showIndustryMenu(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position:
+          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
+      items: Constants.industries.map((industry) {
+        return PopupMenuItem<String>(
+          value: industry,
+          child: Text(industry),
+        );
+      }).toList(), // Convert the mapped items to a list
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          // Filter the cards by the selected industry
+          displayList = allCards.where((card) {
+            return card.industry.toLowerCase().contains(value.toLowerCase());
+          }).toList();
+        });
+      }
+    });
+  }
+
+  void _showSectorMenu(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position:
+          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
+      items: Constants.sectors.map((sector) {
+        return PopupMenuItem<String>(
+          value: sector,
+          child: Text(sector),
+        );
+      }).toList(), // Convert the mapped items to a list
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          displayList = allCards.where((card) {
+            return card.sector.toLowerCase().contains(value.toLowerCase());
+          }).toList();
+        });
+      }
+    });
+  }
+
+  void _showCategoryMenu(BuildContext context) {
+    showMenu<String>(
+      context: context,
+      position:
+          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
+      items: Constants.categories.map((category) {
+        return PopupMenuItem<String>(
+          value: category,
+          child: Text(category),
+        );
+      }).toList(), // Convert the mapped items to a list
+    ).then((value) {
+      if (value != null) {
+        setState(() {
+          displayList = allCards.where((card) {
+            return card.category!.toLowerCase().contains(value.toLowerCase());
+          }).toList();
+        });
+      }
     });
   }
 
@@ -85,15 +151,45 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 const Spacer(),
-                IconButton(
-                    onPressed: () {
-                      setState(() {
-                        _isFiltered = !_isFiltered;
-                      });
-                    },
-                    icon: Icon(_isFiltered
-                        ? Icons.filter_list_off_rounded
-                        : Icons.filter_list_rounded))
+                PopupMenuButton<String>(
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'Filter',
+                        child: const Text('Remove Filter'),
+                        onTap: () {
+                          setState(() {
+                            displayList = allCards;
+                          });
+                        },
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'Sector',
+                        child: const Text('Filter by Sector'),
+                        onTap: () {
+                          _showSectorMenu(context);
+                        },
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'Category',
+                        child: const Text('Filter by Category'),
+                        onTap: () {
+                          _showCategoryMenu(context);
+                        },
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'Industry',
+                        child: const Text('Filter by Industry'),
+                        onTap: () {
+                          _showIndustryMenu(context);
+                        },
+                      ),
+                    ];
+                  },
+                  icon: const Icon(
+                    Icons.filter_list_rounded,
+                  ),
+                )
               ],
             ),
             SizedBox(height: screenHeight * 0.02),

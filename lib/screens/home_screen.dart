@@ -88,22 +88,22 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
+                const Row(
                   children: [
                     const Text(
                       'Saved Cards',
                       style: TextStyle(fontSize: 22),
                     ),
-                    const Spacer(),
-                    IconButton(
-                        onPressed: () {
-                          setState(() {
-                            _isFiltered = !_isFiltered;
-                          });
-                        },
-                        icon: Icon(_isFiltered
-                            ? Icons.filter_list_off_rounded
-                            : Icons.filter_list_rounded))
+                    // const Spacer(),
+                    // IconButton(
+                    //     onPressed: () {
+                    //       setState(() {
+                    //         _isFiltered = !_isFiltered;
+                    //       });
+                    //     },
+                    //     icon: Icon(_isFiltered
+                    //         ? Icons.filter_list_off_rounded
+                    //         : Icons.filter_list_rounded))
                   ],
                 ),
                 SizedBox(
