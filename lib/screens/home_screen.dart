@@ -6,6 +6,7 @@ import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/screens/search_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/services/auth_service.dart';
+import 'package:business_card_manager/widgets/drawer_child.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -23,31 +24,33 @@ void signOut(BuildContext context) {
 
 bool _isFiltered = false;
 
-
 class _HomeScreenState extends State<HomeScreen> {
-
   Future<void> _refreshCards() async {
     setState(() {});
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Text(
           'CardVault',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.w500,
             fontSize: 26,
-            
           ),
         ),
         // backgroundColor: Colors.teal,
         centerTitle: true,
-        leading:
-            IconButton(onPressed: () {}, icon: const Icon(Icons.notes_rounded)),
+        leading: IconButton(
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            icon: const Icon(Icons.notes_rounded)),
         actions: [
           IconButton(
               onPressed: () {
@@ -75,6 +78,8 @@ class _HomeScreenState extends State<HomeScreen> {
           child: const Icon(Icons.add),
         ),
       ),
+      drawer:
+          Drawer(backgroundColor: Colors.teal[50], child: const DrawerChild()),
       body: RefreshIndicator(
         onRefresh: _refreshCards,
         child: SingleChildScrollView(
@@ -91,14 +96,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                     const Spacer(),
                     IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isFiltered = !_isFiltered;
-                        });
-                      },
-                      icon: Icon(_isFiltered
-                          ? Icons.filter_list_off_rounded
-                          : Icons.filter_list_rounded))
+                        onPressed: () {
+                          setState(() {
+                            _isFiltered = !_isFiltered;
+                          });
+                        },
+                        icon: Icon(_isFiltered
+                            ? Icons.filter_list_off_rounded
+                            : Icons.filter_list_rounded))
                   ],
                 ),
                 SizedBox(
@@ -164,15 +169,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         designation:
                                                             card.designation,
                                                         category: card.category,
-                                                        personalAddress:
-                                                            card.personalAddress,
+                                                        personalAddress: card
+                                                            .personalAddress,
                                                         website: card.website,
                                                         email: card.email,
                                                         mobile: card.mobile,
-                                                        telephone: card.telephone,
+                                                        telephone:
+                                                            card.telephone,
                                                         whatsapp: card.whatsapp,
-                                                        initalNotes: card.initialNotes,
-                                                        additionalNotes: card.additionalNotes,
+                                                        initalNotes:
+                                                            card.initialNotes,
+                                                        additionalNotes: card
+                                                            .additionalNotes,
                                                       )));
                                         },
                                         child: Image.network(
