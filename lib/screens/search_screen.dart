@@ -1,14 +1,11 @@
-import 'dart:convert';
 import 'package:business_card_manager/constants/constants.dart';
-import 'package:business_card_manager/providers/user.dart';
 import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/models/card_model.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({super.key});
+  final List<CardModel> cards;
+  const SearchScreen({super.key, required this.cards});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -16,116 +13,53 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   List<CardModel> displayList = [];
-  List<CardModel> allCards = []; // Store all cards fetched from API
 
   @override
   void initState() {
     super.initState();
-    fetchUserCards();
-  }
-
-  Future<void> fetchUserCards() async {
-    final userId = Provider.of<UserProvider>(context, listen: false).user.id;
-    try {
-      final response =
-          await http.get(Uri.parse('${Constants.uri}/card/user/$userId'));
-      if (response.statusCode == 200) {
-        List<dynamic> data = json.decode(response.body);
-        allCards = data.map((json) => CardModel.fromJson(json)).toList();
-        setState(() {
-          displayList =
-              allCards; // Initialize displayList with all fetched cards
-        });
-      } else {
-        throw Exception('Failed to load cards');
-      }
-    } catch (error) {
-      // Handle error (e.g., show a message to the user)
-      print(error);
-    }
+    displayList = widget.cards;
   }
 
   void updateList(String value) {
     setState(() {
-      displayList = allCards.where((card) {
+      displayList = widget.cards.where((card) {
         return card.name.toLowerCase().contains(value.toLowerCase()) ||
             card.companyName.toLowerCase().contains(value.toLowerCase()) ||
             card.industry.toLowerCase().contains(value.toLowerCase()) ||
-            (card.designation?.toLowerCase() ?? '')
-                .contains(value.toLowerCase()) ||
+            (card.designation?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
             card.sector.toLowerCase().contains(value.toLowerCase()) ||
-            (card.category?.toLowerCase() ?? '')
-                .contains(value.toLowerCase()) ||
-            (card.initialNotes?.toLowerCase() ?? '')
-                .contains(value.toLowerCase()) ||
-            (card.additionalNotes?.toLowerCase() ?? '')
-                .contains(value.toLowerCase()) ||
+            (card.category?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.initialNotes?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.additionalNotes?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
             card.venue.toLowerCase().contains(value.toLowerCase());
       }).toList();
     });
   }
 
-  void _showIndustryMenu(BuildContext context) {
+  void _showFilterMenu(BuildContext context, String filterType, List<String> options) {
     showMenu<String>(
       context: context,
-      position:
-          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
-      items: Constants.industries.map((industry) {
+      position: RelativeRect.fromLTRB(100, 100, 0, 0),
+      items: options.map((option) {
         return PopupMenuItem<String>(
-          value: industry,
-          child: Text(industry),
+          value: option,
+          child: Text(option),
         );
-      }).toList(), // Convert the mapped items to a list
+      }).toList(),
     ).then((value) {
       if (value != null) {
         setState(() {
-          // Filter the cards by the selected industry
-          displayList = allCards.where((card) {
-            return card.industry.toLowerCase().contains(value.toLowerCase());
-          }).toList();
-        });
-      }
-    });
-  }
-
-  void _showSectorMenu(BuildContext context) {
-    showMenu<String>(
-      context: context,
-      position:
-          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
-      items: Constants.sectors.map((sector) {
-        return PopupMenuItem<String>(
-          value: sector,
-          child: Text(sector),
-        );
-      }).toList(), // Convert the mapped items to a list
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          displayList = allCards.where((card) {
-            return card.sector.toLowerCase().contains(value.toLowerCase());
-          }).toList();
-        });
-      }
-    });
-  }
-
-  void _showCategoryMenu(BuildContext context) {
-    showMenu<String>(
-      context: context,
-      position:
-          const RelativeRect.fromLTRB(100, 100, 0, 0), // Position of the menu
-      items: Constants.categories.map((category) {
-        return PopupMenuItem<String>(
-          value: category,
-          child: Text(category),
-        );
-      }).toList(), // Convert the mapped items to a list
-    ).then((value) {
-      if (value != null) {
-        setState(() {
-          displayList = allCards.where((card) {
-            return card.category!.toLowerCase().contains(value.toLowerCase());
+          displayList = widget.cards.where((card) {
+            switch (filterType) {
+              case 'Industry':
+                return card.industry.toLowerCase().contains(value.toLowerCase());
+              case 'Sector':
+                return card.sector.toLowerCase().contains(value.toLowerCase());
+              case 'Category':
+                return (card.category?.toLowerCase() ?? '').contains(value.toLowerCase());
+              default:
+                return false;
+            }
           }).toList();
         });
       }
@@ -155,11 +89,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem<String>(
-                        value: 'Filter',
+                        value: 'RemoveFilter',
                         child: const Text('Remove Filter'),
                         onTap: () {
                           setState(() {
-                            displayList = allCards;
+                            displayList = widget.cards;
                           });
                         },
                       ),
@@ -167,28 +101,26 @@ class _SearchScreenState extends State<SearchScreen> {
                         value: 'Sector',
                         child: const Text('Filter by Sector'),
                         onTap: () {
-                          _showSectorMenu(context);
+                          _showFilterMenu(context, 'Sector', Constants.sectors);
                         },
                       ),
                       PopupMenuItem<String>(
                         value: 'Category',
                         child: const Text('Filter by Category'),
                         onTap: () {
-                          _showCategoryMenu(context);
+                          _showFilterMenu(context, 'Category', Constants.categories);
                         },
                       ),
                       PopupMenuItem<String>(
                         value: 'Industry',
                         child: const Text('Filter by Industry'),
                         onTap: () {
-                          _showIndustryMenu(context);
+                          _showFilterMenu(context, 'Industry', Constants.industries);
                         },
                       ),
                     ];
                   },
-                  icon: const Icon(
-                    Icons.filter_list_rounded,
-                  ),
+                  icon: const Icon(Icons.filter_list_rounded),
                 )
               ],
             ),
@@ -250,10 +182,8 @@ class _SearchScreenState extends State<SearchScreen> {
                             category: displayList[index].category,
                             initalNotes: displayList[index].initialNotes,
                             additionalNotes: displayList[index].additionalNotes,
-                            cardImage:
-                                '${Constants.uri}${displayList[index].cardImage!}',
-                            id: displayList[index]
-                                .id, // Update this with the actual image URL
+                            cardImage: '${Constants.uri}${displayList[index].cardImage!}',
+                            id: displayList[index].id,
                           ),
                         ),
                       );

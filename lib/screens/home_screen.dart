@@ -5,7 +5,6 @@ import 'package:business_card_manager/screens/business_card_scanner.dart';
 import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/screens/search_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
-import 'package:business_card_manager/services/auth_service.dart';
 import 'package:business_card_manager/widgets/drawer_child.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,15 +17,43 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-void signOut(BuildContext context) {
-  AuthService().signOut(context);
-}
-
-bool _isFiltered = false;
-
 class _HomeScreenState extends State<HomeScreen> {
   Future<void> _refreshCards() async {
-    setState(() {});
+    setState(() {
+      _fetchCards();
+    });
+  }
+
+  List<CardModel> _cards = [];
+  bool _isLoading = false;
+  String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchCards();
+  }
+
+  Future<void> _fetchCards() async {
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+
+    try {
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final fetchedCards =
+          await ApiService().fetchUserCards(userProvider.user.id);
+      setState(() {
+        _cards = fetchedCards;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _error = 'Failed to load cards: $e';
+        _isLoading = false;
+      });
+    }
   }
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
@@ -50,12 +77,15 @@ class _HomeScreenState extends State<HomeScreen> {
             onPressed: () {
               _scaffoldKey.currentState?.openDrawer();
             },
-            icon: const Icon(Icons.notes_rounded, size: 30,)),
+            icon: const Icon(
+              Icons.notes_rounded,
+              size: 30,
+            )),
         actions: [
           IconButton(
               onPressed: () {
                 Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => const SearchScreen()));
+                    MaterialPageRoute(builder: (ctx) => SearchScreen(cards: _cards,)));
               },
               icon: const Icon(
                 Icons.search_sharp,
@@ -79,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       drawer:
-          Drawer(backgroundColor: Colors.teal[50], child: const DrawerChild()),
+          Drawer(backgroundColor: Colors.teal[50], child: DrawerChild(cards: _cards,)),
       body: RefreshIndicator(
         onRefresh: _refreshCards,
         child: SingleChildScrollView(
@@ -88,123 +118,86 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Row(
-                  children: [
-                    const Text(
-                      'Saved Cards',
-                      style: TextStyle(fontSize: 22),
-                    ),
-                    // const Spacer(),
-                    // IconButton(
-                    //     onPressed: () {
-                    //       setState(() {
-                    //         _isFiltered = !_isFiltered;
-                    //       });
-                    //     },
-                    //     icon: Icon(_isFiltered
-                    //         ? Icons.filter_list_off_rounded
-                    //         : Icons.filter_list_rounded))
-                  ],
+                const Text(
+                  'Saved Cards',
+                  style: TextStyle(fontSize: 22),
                 ),
-                SizedBox(
-                  height: screenHeight * 0.01,
-                ),
-                FutureBuilder<List<CardModel>>(
-                  future: ApiService().fetchUserCards(
-                    Provider.of<UserProvider>(context, listen: false).user.id,
-                  ), // Ensure this returns Future<List<Blog>>
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child: CircularProgressIndicator(
-                        color: Colors.teal,
-                      ));
-                    } else if (snapshot.hasError) {
-                      return Center(child: Text('Error: ${snapshot.error}'));
-                    } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                      return const Center(
-                          child: Text(
-                        'No cards added yet.',
-                      ));
-                    } else {
-                      final cards = snapshot.data!;
-                      return SingleChildScrollView(
-                        child: Padding(
-                          padding: EdgeInsets.all(screenWidth * 0.04),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: cards.map((card) {
-                              return Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Container(
-                                    width: double.infinity,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(
-                                          screenWidth * 0.03),
-                                      // border: Border.all(
-                                      //     color: Colors.teal, width: 3),
-                                    ),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(
-                                          screenWidth *
-                                              0.03), // Same as the container's border radius
-                                      child: InkWell(
-                                        onTap: () {
-                                          Navigator.of(context)
-                                              .push(MaterialPageRoute(
-                                                  builder: (ctx) => CardDetails(
-                                                        id: card.id,
-                                                        name: card.name,
-                                                        industry: card.industry,
-                                                        sector: card.sector,
-                                                        companyName:
-                                                            card.companyName,
-                                                        date: card.date,
-                                                        venue: card.venue,
-                                                        cardImage:
-                                                            '${Constants.uri}${card.cardImage}',
-                                                        companyAddress:
-                                                            card.companyAddress,
-                                                        designation:
-                                                            card.designation,
-                                                        category: card.category,
-                                                        personalAddress: card
-                                                            .personalAddress,
-                                                        website: card.website,
-                                                        email: card.email,
-                                                        mobile: card.mobile,
-                                                        telephone:
-                                                            card.telephone,
-                                                        whatsapp: card.whatsapp,
-                                                        initalNotes:
-                                                            card.initialNotes,
-                                                        additionalNotes: card
-                                                            .additionalNotes,
-                                                      )));
-                                        },
-                                        child: Image.network(
-                                          '${Constants.uri}${card.cardImage}',
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(height: screenHeight * 0.02),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      );
-                    }
-                  },
-                ),
+                SizedBox(height: screenHeight * 0.03),
+                _buildCardList(context, screenWidth, screenHeight),
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCardList(
+      BuildContext context, double screenWidth, double screenHeight) {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: Colors.teal));
+    } else if (_error != null) {
+      return Center(child: Text(_error!));
+    } else if (_cards.isEmpty) {
+      return const Center(child: Text('No cards added yet.'));
+    } else {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: _cards
+            .map((card) =>
+                _buildCardItem(card, context, screenWidth, screenHeight))
+            .toList(),
+      );
+    }
+  }
+
+  Widget _buildCardItem(CardModel card, BuildContext context,
+      double screenWidth, double screenHeight) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: double.infinity,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(screenWidth * 0.03),
+            child: InkWell(
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => CardDetails(
+                    id: card.id,
+                    name: card.name,
+                    industry: card.industry,
+                    sector: card.sector,
+                    companyName: card.companyName,
+                    date: card.date,
+                    venue: card.venue,
+                    cardImage: '${Constants.uri}${card.cardImage}',
+                    companyAddress: card.companyAddress,
+                    designation: card.designation,
+                    category: card.category,
+                    personalAddress: card.personalAddress,
+                    website: card.website,
+                    email: card.email,
+                    mobile: card.mobile,
+                    telephone: card.telephone,
+                    whatsapp: card.whatsapp,
+                    initalNotes: card.initialNotes,
+                    additionalNotes: card.additionalNotes,
+                  ),
+                ));
+              },
+              child: Image.network(
+                '${Constants.uri}${card.cardImage}',
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: screenHeight * 0.02),
+      ],
     );
   }
 }

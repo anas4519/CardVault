@@ -75,15 +75,16 @@ class _CardDetailsState extends State<CardDetails> {
   }
 
   Future<void> _makePhoneCall(String phoneNumber) async {
-  final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
-  
-  if (await canLaunchUrl(callUri)) {
-    await launchUrl(callUri);
-  } else {
-    // You can show an error message if the call can't be initiated
-    print('Could not launch $callUri');
+    final Uri callUri = Uri(scheme: 'tel', path: phoneNumber);
+
+    if (await canLaunchUrl(callUri)) {
+      await launchUrl(callUri);
+    } else {
+      // You can show an error message if the call can't be initiated
+      print('Could not launch $callUri');
+    }
   }
-}
+
   Widget _buildDetailColumn(String label, String value) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,7 +181,10 @@ class _CardDetailsState extends State<CardDetails> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.companyName, style: const TextStyle(fontSize: 16),),
+        title: Text(
+          widget.companyName,
+          style: const TextStyle(fontSize: 16),
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -269,7 +273,7 @@ class _CardDetailsState extends State<CardDetails> {
                         _buildDetailColumn('Telephone', widget.telephone!),
                         const Spacer(),
                         IconButton(
-                            onPressed: ()=>_makePhoneCall(widget.telephone!),
+                            onPressed: () => _makePhoneCall(widget.telephone!),
                             icon: const Icon(
                               Icons.call,
                               color: Colors.black,
@@ -422,30 +426,62 @@ class _CardDetailsState extends State<CardDetails> {
             SizedBox(
               height: screenHeight * 0.1,
             ),
-            Center(
-              child: SizedBox(
-                width: screenWidth * 0.8, // 80% of screen width
-                child: TextButton(
-                  onPressed: () {
-                    _confirmDelete();
-                  },
-                  style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.redAccent),
-                    foregroundColor: WidgetStateProperty.all(Colors.white),
-                    shape: WidgetStateProperty.all<RoundedRectangleBorder>(
-                      RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.circular(8.0), // Smaller border radius
-                      ),
-                    ),
-                    padding: WidgetStateProperty.all<EdgeInsets>(
-                      const EdgeInsets.symmetric(
-                          vertical: 15.0), // Increase button height
+            SizedBox(
+              width: screenWidth * 0.8, // 80% of screen width
+              child: TextButton(
+                onPressed: () {},
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.teal),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8.0), // Smaller border radius
                     ),
                   ),
-                  child:
-                      const Text('Delete Card', style: TextStyle(fontSize: 16)),
+                  padding: WidgetStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(
+                        vertical: 15.0), // Increase button height
+                  ),
                 ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.download),
+                    SizedBox(
+                      width: screenWidth * 0.02,
+                    ),
+                    const Text('Download as PDF',
+                        style: TextStyle(fontSize: 16)),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              height: screenHeight * 0.01,
+            ),
+            SizedBox(
+              width: screenWidth * 0.8, // 80% of screen width
+              child: TextButton(
+                onPressed: () {
+                  _confirmDelete();
+                },
+                style: ButtonStyle(
+                  backgroundColor: WidgetStateProperty.all(Colors.redAccent),
+                  foregroundColor: WidgetStateProperty.all(Colors.white),
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                      borderRadius:
+                          BorderRadius.circular(8.0), // Smaller border radius
+                    ),
+                  ),
+                  padding: WidgetStateProperty.all<EdgeInsets>(
+                    const EdgeInsets.symmetric(
+                        vertical: 15.0), // Increase button height
+                  ),
+                ),
+                child:
+                    const Text('Delete Card', style: TextStyle(fontSize: 16)),
               ),
             ),
           ],

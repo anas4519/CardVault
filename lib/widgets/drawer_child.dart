@@ -1,3 +1,4 @@
+import 'package:business_card_manager/models/card_model.dart';
 import 'package:business_card_manager/providers/user.dart';
 import 'package:business_card_manager/screens/business_card_scanner.dart';
 import 'package:business_card_manager/screens/search_screen.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 class DrawerChild extends StatelessWidget {
-  const DrawerChild({super.key});
+  final List<CardModel> cards;
+  const DrawerChild({super.key, required this.cards});
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,9 @@ class DrawerChild extends StatelessWidget {
             ),
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
-                  builder: (ctx) => const SearchScreen()));
+                  builder: (ctx) => SearchScreen(
+                        cards: cards,
+                      )));
             },
           ),
           ListTile(
@@ -97,9 +101,7 @@ class DrawerChild extends StatelessWidget {
               'Create a Card',
               style: TextStyle(fontSize: 16),
             ),
-            onTap: () {
-              
-            },
+            onTap: () {},
           ),
           ListTile(
             leading: const Icon(
