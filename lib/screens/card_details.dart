@@ -3,8 +3,14 @@ import 'package:business_card_manager/screens/home_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
+import 'package:pdf/pdf.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:http/http.dart' as http;
+import 'dart:io';
+import 'package:flutter/services.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 
 class CardDetails extends StatefulWidget {
   final String name;
@@ -145,6 +151,91 @@ class _CardDetailsState extends State<CardDetails> {
 
     if (confirmed == true) {
       _deleteCard(); // Call the delete function if confirmed
+    }
+  }
+
+  Future<void> _generateAndViewPDF() async {
+    final pdf = pw.Document();
+
+    final fontData = await rootBundle.load("assets/fonts/Poppins-Regular.ttf");
+    final ttf = pw.Font.ttf(fontData);
+
+    final response = await http.get(Uri.parse(widget.cardImage));
+    final image = pw.MemoryImage(response.bodyBytes);
+
+    pdf.addPage(
+      pw.MultiPage(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) => [
+          pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              pw.Center(child: pw.Image(image, width: 300, height: 200)),
+              pw.SizedBox(height: 20),
+              pw.Text('Name:   ${widget.name}', style: pw.TextStyle(font: ttf)),
+              pw.Text('Industry:   ${widget.industry}',
+                  style: pw.TextStyle(font: ttf)),
+              pw.Text('Sector:   ${widget.sector}',
+                  style: pw.TextStyle(font: ttf)),
+              pw.Text('Company Name:   ${widget.companyName}',
+                  style: pw.TextStyle(font: ttf)),
+              if (widget.designation != null)
+                pw.Text('Designation:   ${widget.designation}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.companyAddress != null)
+                pw.Text('Company Address:   ${widget.companyAddress}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.personalAddress != null)
+                pw.Text('Personal Address:   ${widget.personalAddress}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.email != null)
+                pw.Text('Email:   ${widget.email}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.website != null)
+                pw.Text('Website:   ${widget.website}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.telephone != null)
+                pw.Text('Telephone:   ${widget.telephone}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.mobile != null)
+                pw.Text('Mobile:   ${widget.mobile}',
+                    style: pw.TextStyle(font: ttf)),
+              if (widget.whatsapp != null)
+                pw.Text('WhatsApp:   ${widget.whatsapp}',
+                    style: pw.TextStyle(font: ttf)),
+              pw.Text(
+                  'Card Received Date:   ${widget.date.day}-${widget.date.month}-${widget.date.year}',
+                  style: pw.TextStyle(font: ttf)),
+              pw.Text('Card Received Venue:   ${widget.venue}',
+                  style: pw.TextStyle(font: ttf)),
+              if (widget.category != null)
+                pw.Text('Category:   ${widget.category}',
+                    style: pw.TextStyle(font: ttf)),
+              pw.SizedBox(height: 10),
+              pw.Text('Initial Notes:\n${_initialnotesController.text}',
+                  style: pw.TextStyle(font: ttf)),
+              pw.SizedBox(height: 10),
+              pw.Text('Additional Notes:\n${_additionalNotesController.text}',
+                  style: pw.TextStyle(font: ttf)),
+            ],
+          ),
+        ],
+      ),
+    );
+
+    // Save the PDF file temporarily
+    final output = await getTemporaryDirectory();
+    final filePath = "${output.path}/business_card_${widget.name}.pdf";
+    final file = File(filePath);
+    await file.writeAsBytes(await pdf.save());
+
+    // Attempt to open the PDF
+    final result = await OpenFile.open(file.path);
+
+    // Check for detailed result info
+    if (result.type != ResultType.done) {
+    } else {
+      print("PDF opened successfully!");
     }
   }
 
@@ -427,30 +518,28 @@ class _CardDetailsState extends State<CardDetails> {
               height: screenHeight * 0.1,
             ),
             SizedBox(
-              width: screenWidth * 0.8, // 80% of screen width
+              width: screenWidth * 0.8,
               child: TextButton(
-                onPressed: () {},
+                onPressed: () async {
+                  _generateAndViewPDF();
+                },
                 style: ButtonStyle(
                   backgroundColor: WidgetStateProperty.all(Colors.teal),
                   foregroundColor: WidgetStateProperty.all(Colors.white),
                   shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.circular(8.0), // Smaller border radius
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
                   ),
                   padding: WidgetStateProperty.all<EdgeInsets>(
-                    const EdgeInsets.symmetric(
-                        vertical: 15.0), // Increase button height
+                    const EdgeInsets.symmetric(vertical: 15.0),
                   ),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.download),
-                    SizedBox(
-                      width: screenWidth * 0.02,
-                    ),
+                    const Icon(Icons.download),
+                    SizedBox(width: screenWidth * 0.02),
                     const Text('Download as PDF',
                         style: TextStyle(fontSize: 16)),
                   ],
