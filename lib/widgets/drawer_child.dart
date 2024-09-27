@@ -94,17 +94,6 @@ class DrawerChild extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(
-              Icons.credit_card_rounded,
-              color: Colors.teal,
-            ),
-            title: const Text(
-              'Create a Card',
-              style: TextStyle(fontSize: 16),
-            ),
-            onTap: () {},
-          ),
-          ListTile(
-            leading: const Icon(
               Icons.logout_rounded,
               color: Colors.teal,
             ),

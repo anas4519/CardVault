@@ -12,15 +12,32 @@ import 'package:provider/provider.dart';
 
 class ApiService {
   Future<List<CardModel>> fetchUserCards(String userID) async {
+  try {
     final response =
         await http.get(Uri.parse('${Constants.uri}/card/user/$userID'));
+
     if (response.statusCode == 200) {
       List<dynamic> data = json.decode(response.body);
+
+      // Check if the data is empty or not
+      if (data.isEmpty) {
+        print("No cards found for the user");
+        return [];
+      }
+
       return data.map((json) => CardModel.fromJson(json)).toList();
+    } else if (response.statusCode == 404) {
+      print("No cards found for the user");
+      return [];
     } else {
-      throw Exception('Failed to load blogs');
+      throw Exception('Failed to load cards: ${response.statusCode}');
     }
+  } catch (e) {
+    print("Error fetching cards: $e");
+    throw Exception('Failed to load cards');
   }
+}
+
 
   Future<void> postData(
       String name,

@@ -55,47 +55,45 @@ class _LoginState extends State<Login> {
     }
   }
 
-  Future<void> postData(
-      String email, String password, BuildContext context) async {
-    final url = Uri.parse('${Constants.uri}/user/signin');
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-    final body = json.encode({"email": email, "password": password});
+Future<void> postData(String email, String password, BuildContext context) async {
+  final url = Uri.parse('${Constants.uri}/user/signin');
+  final headers = {
+    'Content-Type': 'application/json',
+  };
+  final body = json.encode({"email": email, "password": password});
 
-    try {
-      var userProvier = Provider.of<UserProvider>(context, listen: false);
-      final navigator = Navigator.of(context);
-      final response = await http.post(url, headers: headers, body: body);
+  try {
+    var userProvider = Provider.of<UserProvider>(context, listen: false);
+    final navigator = Navigator.of(context);
+    final response = await http.post(url, headers: headers, body: body);
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
+    if (response.statusCode == 200) {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      
+      await prefs.setString('x-auth-token', jsonDecode(response.body)['token']);
+      
+      userProvider.setUser(response.body);
+      
+      await AuthService().getUserData(context);
 
-      if (response.statusCode == 200) {
-        SharedPreferences prefs = await SharedPreferences.getInstance();
-        userProvier.setUser(response.body);
-        AuthService().getUserData(context);
-        await prefs.setString(
-            'x-auth-token', jsonDecode(response.body)['token']);
-        navigator.pushAndRemoveUntil(
-            MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-            (route) => false);
-      } else if (response.statusCode == 401) {
-        Navigator.of(context).pop();
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(jsonDecode(response.body)['error'])));
-      }
-      // else {
-      //   print('Error: ${response.statusCode} - ${response.reasonPhrase}');
-      // }
-    } catch (error) {
-      print('Error: $error');
+      navigator.pushAndRemoveUntil(
+        MaterialPageRoute(builder: (ctx) => const HomeScreen()),
+        (route) => false
+      );
+    } else if (response.statusCode == 401) {
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $error'),
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(jsonDecode(response.body)['error']))
+      );
     }
+  } catch (error) {
+    print('Error: $error');
+    Navigator.of(context).pop();
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Error: $error'),
+    ));
   }
+}
 
   @override
   Widget build(BuildContext context) {

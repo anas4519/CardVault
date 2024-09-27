@@ -41,7 +41,6 @@ router.post("/tokenIsValid", async (req, res) => {
         if (!verified) return res.json(false);
         const userId = verified._id;
         const user = await User.findById(userId);
-        console.log(user.profileImageURL);
 
 
         if (!user) return res.json(false);

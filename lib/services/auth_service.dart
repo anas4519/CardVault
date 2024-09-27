@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  void getUserData(
+  Future<void> getUserData(
     BuildContext context,
   ) async {
     try {
@@ -55,3 +55,10 @@ class AuthService {
         (route) => false);
   }
 }
+// appBar: AppBar(
+      //   title: Text(
+      //     widget.companyName,
+      //     style: const TextStyle(fontSize: 16),
+      //   ),
+      //   centerTitle: true,
+      // ),

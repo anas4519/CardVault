@@ -9,6 +9,7 @@ import 'package:business_card_manager/widgets/drawer_child.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -66,26 +67,49 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text(
           'CardVault',
-          style: GoogleFonts.poppins(
+          style: GoogleFonts.montserrat(
             fontWeight: FontWeight.w500,
             fontSize: 26,
           ),
         ),
         // backgroundColor: Colors.teal,
         centerTitle: true,
-        leading: IconButton(
-            onPressed: () {
+        leading: Padding(
+          padding: EdgeInsets.only(left: screenWidth * 0.02),
+          child: GestureDetector(
+            onTap: () {
               _scaffoldKey.currentState?.openDrawer();
             },
-            icon: const Icon(
-              Icons.notes_rounded,
-              size: 30,
-            )),
+            child: CircleAvatar(
+              backgroundColor: Colors.transparent,
+              radius: 20.0,
+              child: ClipOval(
+                child: Image.asset(
+                  'assets/icons/launcher_icon.png',
+                  fit: BoxFit.cover,
+                  width: 50.0,
+                  height: 50,
+                ),
+              ),
+            ),
+          ),
+        ),
+
+        // IconButton(
+        //     onPressed: () {
+        //       _scaffoldKey.currentState?.openDrawer();
+        //     },
+        //     icon: const Icon(
+        //       Icons.notes_rounded,
+        //       size: 30,
+        //     )),
         actions: [
           IconButton(
               onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (ctx) => SearchScreen(cards: _cards,)));
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => SearchScreen(
+                          cards: _cards,
+                        )));
               },
               icon: const Icon(
                 Icons.search_sharp,
@@ -108,8 +132,11 @@ class _HomeScreenState extends State<HomeScreen> {
           child: const Icon(Icons.add),
         ),
       ),
-      drawer:
-          Drawer(backgroundColor: Colors.teal[50], child: DrawerChild(cards: _cards,)),
+      drawer: Drawer(
+          backgroundColor: Colors.teal[50],
+          child: DrawerChild(
+            cards: _cards,
+          )),
       body: RefreshIndicator(
         onRefresh: _refreshCards,
         child: SingleChildScrollView(
@@ -118,11 +145,12 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                SizedBox(height: screenHeight * 0.02),
                 const Text(
                   'Saved Cards',
                   style: TextStyle(fontSize: 22),
                 ),
-                SizedBox(height: screenHeight * 0.03),
+                SizedBox(height: screenHeight * 0.02),
                 _buildCardList(context, screenWidth, screenHeight),
               ],
             ),
@@ -164,36 +192,37 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(screenWidth * 0.03),
             child: InkWell(
-              onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (ctx) => CardDetails(
-                    id: card.id,
-                    name: card.name,
-                    industry: card.industry,
-                    sector: card.sector,
-                    companyName: card.companyName,
-                    date: card.date,
-                    venue: card.venue,
-                    cardImage: '${Constants.uri}${card.cardImage}',
-                    companyAddress: card.companyAddress,
-                    designation: card.designation,
-                    category: card.category,
-                    personalAddress: card.personalAddress,
-                    website: card.website,
-                    email: card.email,
-                    mobile: card.mobile,
-                    telephone: card.telephone,
-                    whatsapp: card.whatsapp,
-                    initalNotes: card.initialNotes,
-                    additionalNotes: card.additionalNotes,
-                  ),
-                ));
-              },
-              child: Image.network(
-                '${Constants.uri}${card.cardImage}',
-                fit: BoxFit.cover,
-              ),
-            ),
+                onTap: () {
+                  Navigator.of(context).push(MaterialPageRoute(
+                    builder: (ctx) => CardDetails(
+                      id: card.id,
+                      name: card.name,
+                      industry: card.industry,
+                      sector: card.sector,
+                      companyName: card.companyName,
+                      date: card.date,
+                      venue: card.venue,
+                      cardImage: '${Constants.uri}${card.cardImage}',
+                      companyAddress: card.companyAddress,
+                      designation: card.designation,
+                      category: card.category,
+                      personalAddress: card.personalAddress,
+                      website: card.website,
+                      email: card.email,
+                      mobile: card.mobile,
+                      telephone: card.telephone,
+                      whatsapp: card.whatsapp,
+                      initalNotes: card.initialNotes,
+                      additionalNotes: card.additionalNotes,
+                    ),
+                  ));
+                },
+                child: CachedNetworkImage(
+                  imageUrl: '${Constants.uri}${card.cardImage}',
+                  fit: BoxFit.cover,
+                  // placeholder: (context, url) => const CircularProgressIndicator(),
+                  errorWidget: (context, url, error) => const Icon(Icons.error),
+                )),
           ),
         ),
         SizedBox(height: screenHeight * 0.02),

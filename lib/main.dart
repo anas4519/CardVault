@@ -7,11 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_gemini/flutter_gemini.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async{
   Gemini.init(apiKey: Constants.GEMINI_API_KEY);
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+  
   runApp(MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: const MyApp()));
@@ -25,12 +29,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  // This widget is the root of your application.
   final AuthService authService = AuthService();
   @override
   void initState() {
-    authService.getUserData(context);
     super.initState();
+    _initApp();
+  }
+
+  Future<void> _initApp() async {
+    await authService.getUserData(context); // Fetch user data during splash screen
+    FlutterNativeSplash.remove(); // Remove the splash screen after loading user data
   }
 
   @override
@@ -38,14 +46,11 @@ class _MyAppState extends State<MyApp> {
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       systemNavigationBarColor: Colors.teal[50],
     ));
-
     return MaterialApp(
       theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
-          textTheme: GoogleFonts.loraTextTheme(),
-
-          // scaffoldBackgroundColor: Colors.grey[200],
+          textTheme: GoogleFonts.montserratTextTheme(),
           scaffoldBackgroundColor: Colors.teal[50],
           appBarTheme: AppBarTheme(
             backgroundColor: Colors.teal[50],

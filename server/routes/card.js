@@ -64,8 +64,15 @@ router.get('/user/:createdBy', async (req, res) => {
     try {
         const { createdBy } = req.params;
 
-        const allCards = await Card.find({ createdBy })
-            .sort({ createdAt: -1 })
+        if (!createdBy) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+
+        const allCards = await Card.find({ createdBy }).sort({ createdAt: -1 });
+
+        if (!allCards || allCards.length === 0) {
+            return res.status(404).json({ message: 'No cards found for this user' });
+        }
 
         return res.json(allCards);
     } catch (error) {
@@ -73,6 +80,7 @@ router.get('/user/:createdBy', async (req, res) => {
         return res.status(500).json({ error: 'Internal server error' });
     }
 });
+
 
 router.delete('/:id', async (req, res) => {
     const { id } = req.params;

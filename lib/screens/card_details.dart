@@ -2,6 +2,7 @@ import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/screens/home_screen.dart';
 import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/utils/utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:pdf/pdf.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -284,8 +285,18 @@ class _CardDetailsState extends State<CardDetails> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Center(
-              child: GestureDetector(
-                  onLongPress: () {}, child: Image.network(widget.cardImage)),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(screenWidth * 0.03),
+                child: GestureDetector(
+                    onLongPress: () {},
+                    child: CachedNetworkImage(
+                      imageUrl: widget.cardImage,
+                      fit: BoxFit.cover,
+                      placeholder: (context, url) =>
+                          const Center(child: CircularProgressIndicator()),
+                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                    )),
+              ),
             ),
             SizedBox(height: screenHeight * 0.04),
             Container(
