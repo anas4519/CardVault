@@ -11,11 +11,11 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 
-void main() async{
+void main() async {
   Gemini.init(apiKey: Constants.GEMINI_API_KEY);
   WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
-  
+
   runApp(MultiProvider(
       providers: [ChangeNotifierProvider(create: (_) => UserProvider())],
       child: const MyApp()));
@@ -37,8 +37,10 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initApp() async {
-    await authService.getUserData(context); // Fetch user data during splash screen
-    FlutterNativeSplash.remove(); // Remove the splash screen after loading user data
+    await authService
+        .getUserData(context); // Fetch user data during splash screen
+    FlutterNativeSplash
+        .remove(); // Remove the splash screen after loading user data
   }
 
   @override

@@ -1,26 +1,22 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:business_card_manager/constants/constants.dart';
+import 'package:business_card_manager/screens/auth/reset_passwords/reset_password.dart';
 import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 
-class VerifyOtp extends StatefulWidget {
+class ForgotPassword2 extends StatefulWidget {
   final String email;
-  final String name;
-  final String password;
-  const VerifyOtp(
-      {super.key,
-      required this.email,
-      required this.name,
-      required this.password});
+
+  const ForgotPassword2({super.key, required this.email});
 
   @override
-  State<VerifyOtp> createState() => _VerifyOtpState();
+  State<ForgotPassword2> createState() => _ForgotPassword2State();
 }
 
-class _VerifyOtpState extends State<VerifyOtp> {
+class _ForgotPassword2State extends State<ForgotPassword2> {
   // Store the OTP
   final List<TextEditingController> _otpControllers =
       List.generate(4, (index) => TextEditingController());
@@ -53,33 +49,6 @@ class _VerifyOtpState extends State<VerifyOtp> {
     });
   }
 
-  Future<void> postData(
-      String name, String email, String password, BuildContext context) async {
-    final url = Uri.parse('${Constants.uri}/user/signup');
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-    final body =
-        json.encode({"fullName": name, "email": email, "password": password});
-
-    print('Sending request with body: $body'); // Add this line for debugging
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        showSnackBar(context, 'OTP sent successfully!');
-      } else {
-        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
-      }
-    } catch (error) {
-      print('Exception: $error');
-    }
-  }
-
   @override
   void dispose() {
     // Dispose controllers and timer to avoid memory leaks
@@ -88,6 +57,57 @@ class _VerifyOtpState extends State<VerifyOtp> {
     }
     _timer.cancel();
     super.dispose();
+  }
+
+  // Function to verify OTP
+  Future<void> verifyOtpToChangePassword(
+      String email, String otp, BuildContext context) async {
+    final url = Uri.parse('${Constants.uri}/user/verifyOTPToChangePassword');
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({'email': email, 'otp': otp});
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final result = jsonDecode(response.body);
+        if (result == true) {
+          Navigator.of(context).push(
+              MaterialPageRoute(builder: (ctx) => ResetPassword(email: email)));
+          // Navigate to next screen or handle success
+        } else {
+          showSnackBar(context, 'Invalid or expired OTP!');
+        }
+      } else {
+        // Handle error responses
+        showSnackBar(context, 'OTP verification failed!');
+      }
+    } catch (error) {
+      // Handle exceptions
+      showSnackBar(context, 'Error: $error');
+    }
+  }
+
+  Future<void> postData(String email, BuildContext context) async {
+    final url = Uri.parse('${Constants.uri}/user/generateOTPToChangePassword');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    final body = json.encode({"email": email});
+
+    try {
+      final response = await http.post(url, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        showSnackBar(context, 'OTP sent successfully!');
+      } else if (response.statusCode == 400) {
+        showSnackBar(context, 'User does not exist!');
+      } else {
+        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+      }
+    } catch (error) {
+      print('Exception: $error');
+    }
   }
 
   // Function to build each OTP field
@@ -124,37 +144,6 @@ class _VerifyOtpState extends State<VerifyOtp> {
     );
   }
 
-  Future<void> checkOTP(BuildContext context, String otp) async {
-    final url = Uri.parse('${Constants.uri}/user/verify-otp');
-    final headers = {
-      'Content-Type': 'application/json',
-    };
-    final body = json.encode({
-      "fullName": widget.name,
-      "email": widget.email,
-      "password": widget.password,
-      "otp": otp
-    });
-
-    // print('Sending request with body: $body'); // Add this line for debugging
-
-    try {
-      final response = await http.post(url, headers: headers, body: body);
-
-      // print('Response status: ${response.statusCode}');
-      // print('Response body: ${response.body}');
-
-      if (response.statusCode == 200) {
-        print('Verified!');
-        Navigator.of(context).pop();
-      } else {
-        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
-      }
-    } catch (error) {
-      print('Exception: $error');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -170,7 +159,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
             children: [
               const Text('We sent you a code', style: TextStyle(fontSize: 24)),
               SizedBox(height: screenHeight * 0.05),
-              Text('Enter it to verifiy ${widget.email}',
+              Text('Enter it to verify ${widget.email}',
                   style: const TextStyle(fontSize: 18)),
               SizedBox(height: screenHeight * 0.02),
               Form(
@@ -194,8 +183,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                     String otp = _otpControllers
                         .map((controller) => controller.text)
                         .join();
-                    checkOTP(context, otp);
-                    // Add logic to verify OTP and proceed with registration
+                    verifyOtpToChangePassword(widget.email, otp, context);
                   },
                   child: const Text('Verify OTP'),
                 ),
@@ -216,8 +204,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
                             ? () {
                                 // Handle Resend OTP logic
                                 startTimer(); // Restart the timer
-                                postData(widget.name, widget.email,
-                                    widget.password, context);
+                                postData(widget.email, context);
                               }
                             : null, // Disable button if can't resend yet
                         child: const Text('Resend OTP'),

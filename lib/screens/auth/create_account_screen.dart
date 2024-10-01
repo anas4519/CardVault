@@ -15,7 +15,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
 
   bool _obscureText = true;
@@ -32,7 +33,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       _obscureText2 = !_obscureText2;
     });
   }
-
 
   @override
   void dispose() {
@@ -55,7 +55,8 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
   }
 
   String? _validatePassword(String? value) {
-    final passwordRegex = RegExp(r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#\$&*~]).{8,}$');
+    final passwordRegex =
+        RegExp(r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#\$&*~]).{8,}$');
     if (value == null || value.isEmpty) {
       return 'Please enter your password';
     } else if (!passwordRegex.hasMatch(value)) {
@@ -78,7 +79,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     }
   }
 
-    Future<void> postData(
+  Future<void> postData(
       String name, String email, String password, BuildContext context) async {
     final url = Uri.parse('${Constants.uri}/user/signup');
     final headers = {
@@ -96,7 +97,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
       print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        Navigator.of(context).pop();
         Navigator.of(context).push(MaterialPageRoute(
             builder: (ctx) => VerifyOtp(
                   email: email,
@@ -178,7 +178,9 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: _togglePasswordView,
                       ),
@@ -209,40 +211,43 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(screenWidth * 0.02),
                       ),
-                       suffixIcon: IconButton(
+                      suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureText ? Icons.visibility : Icons.visibility_off,
+                          _obscureText
+                              ? Icons.visibility
+                              : Icons.visibility_off,
                         ),
                         onPressed: _toggleConfirmPasswordView,
                       ),
                     ),
                     validator: _validateConfirmPassword,
-                    
                   ),
                   SizedBox(height: screenHeight * 0.02),
                 ],
               ),
             ),
-            SizedBox(height: screenHeight*0.04,),
             SizedBox(
-                    width: screenWidth * 0.8,
-                    height: screenHeight * 0.075,
-                    child: TextButton(
-                      onPressed: _register,
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.teal,
-                        foregroundColor: Colors.white,
-                        // Padding
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(15.0),
-                        ),
-                      ),
-                      child: const Text(
-                        'Create Account',
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ),
+              height: screenHeight * 0.04,
+            ),
+            SizedBox(
+              width: screenWidth * 0.8,
+              height: screenHeight * 0.075,
+              child: TextButton(
+                onPressed: _register,
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.teal,
+                  foregroundColor: Colors.white,
+                  // Padding
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
                   ),
+                ),
+                child: const Text(
+                  'Create Account',
+                  style: TextStyle(fontSize: 20),
+                ),
+              ),
+            ),
           ],
         ),
       ),

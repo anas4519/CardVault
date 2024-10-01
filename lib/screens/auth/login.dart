@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:business_card_manager/providers/user.dart';
+import 'package:business_card_manager/screens/auth/reset_passwords/forgot_paswword1.dart';
 import 'package:business_card_manager/screens/home_screen.dart';
 import 'package:business_card_manager/services/auth_service.dart';
+import 'package:business_card_manager/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:flutter/material.dart';
@@ -55,45 +57,43 @@ class _LoginState extends State<Login> {
     }
   }
 
-Future<void> postData(String email, String password, BuildContext context) async {
-  final url = Uri.parse('${Constants.uri}/user/signin');
-  final headers = {
-    'Content-Type': 'application/json',
-  };
-  final body = json.encode({"email": email, "password": password});
+  Future<void> postData(
+      String email, String password, BuildContext context) async {
+    final url = Uri.parse('${Constants.uri}/user/signin');
+    final headers = {
+      'Content-Type': 'application/json',
+    };
+    final body = json.encode({"email": email, "password": password});
 
-  try {
-    var userProvider = Provider.of<UserProvider>(context, listen: false);
-    final navigator = Navigator.of(context);
-    final response = await http.post(url, headers: headers, body: body);
+    try {
+      var userProvider = Provider.of<UserProvider>(context, listen: false);
+      final navigator = Navigator.of(context);
+      final response = await http.post(url, headers: headers, body: body);
 
-    if (response.statusCode == 200) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      
-      await prefs.setString('x-auth-token', jsonDecode(response.body)['token']);
-      
-      userProvider.setUser(response.body);
-      
-      await AuthService().getUserData(context);
+      if (response.statusCode == 200) {
+        SharedPreferences prefs = await SharedPreferences.getInstance();
 
-      navigator.pushAndRemoveUntil(
-        MaterialPageRoute(builder: (ctx) => const HomeScreen()),
-        (route) => false
-      );
-    } else if (response.statusCode == 401) {
+        await prefs.setString(
+            'x-auth-token', jsonDecode(response.body)['token']);
+
+        userProvider.setUser(response.body);
+
+        await AuthService().getUserData(context);
+
+        navigator.pushAndRemoveUntil(
+            MaterialPageRoute(builder: (ctx) => const HomeScreen()),
+            (route) => false);
+      } else if (response.statusCode == 401) {
+        showSnackBar(context, jsonDecode(response.body)['error']);
+      }
+    } catch (error) {
+      print('Error: $error');
       Navigator.of(context).pop();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(jsonDecode(response.body)['error']))
-      );
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error: $error'),
+      ));
     }
-  } catch (error) {
-    print('Error: $error');
-    Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text('Error: $error'),
-    ));
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -155,11 +155,25 @@ Future<void> postData(String email, String password, BuildContext context) async
                   SizedBox(height: screenHeight * 0.01),
 
                   // Password Requirement Note
-                  SizedBox(height: screenHeight * 0.02),
+                  // SizedBox(height: screenHeight * 0.02),
                 ],
               ),
             ),
-            SizedBox(height: screenWidth*0.05,),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => const ForgotPassword1()));
+                  },
+                  child: const Text(
+                    'Forgot Password?',
+                    style: TextStyle(color: Colors.teal),
+                  )),
+            ),
+            SizedBox(
+              height: screenWidth * 0.05,
+            ),
             SizedBox(
               width: screenWidth * 0.8,
               height: screenHeight * 0.075,
