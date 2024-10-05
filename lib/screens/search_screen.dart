@@ -13,6 +13,7 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   List<CardModel> displayList = [];
+  bool _isFiltered = false;
 
   @override
   void initState() {
@@ -22,6 +23,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   void updateList(String value) {
     setState(() {
+      _isFiltered = true;
       displayList = widget.cards.where((card) {
         return card.name.toLowerCase().contains(value.toLowerCase()) ||
             card.companyName.toLowerCase().contains(value.toLowerCase()) ||
@@ -39,7 +41,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void _showFilterMenu(BuildContext context, String filterType, List<String> options) {
     showMenu<String>(
       context: context,
-      position: RelativeRect.fromLTRB(100, 100, 0, 0),
+      position: const RelativeRect.fromLTRB(100, 100, 0, 0),
       items: options.map((option) {
         return PopupMenuItem<String>(
           value: option,
@@ -49,6 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
     ).then((value) {
       if (value != null) {
         setState(() {
+          _isFiltered = true;
           displayList = widget.cards.where((card) {
             switch (filterType) {
               case 'Industry':
@@ -66,10 +69,18 @@ class _SearchScreenState extends State<SearchScreen> {
     });
   }
 
+  void _removeFilter() {
+    setState(() {
+      _isFiltered = false;
+      displayList = widget.cards;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -91,11 +102,7 @@ class _SearchScreenState extends State<SearchScreen> {
                       PopupMenuItem<String>(
                         value: 'RemoveFilter',
                         child: const Text('Remove Filter'),
-                        onTap: () {
-                          setState(() {
-                            displayList = widget.cards;
-                          });
-                        },
+                        onTap: _removeFilter, // Resets the filter
                       ),
                       PopupMenuItem<String>(
                         value: 'Sector',
@@ -120,8 +127,10 @@ class _SearchScreenState extends State<SearchScreen> {
                       ),
                     ];
                   },
-                  icon: const Icon(Icons.filter_list_rounded),
-                )
+                  icon: _isFiltered
+                      ? const Icon(Icons.filter_list_off_rounded)
+                      : const Icon(Icons.filter_list_rounded),
+                ),
               ],
             ),
             SizedBox(height: screenHeight * 0.02),

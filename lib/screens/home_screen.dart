@@ -74,35 +74,36 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         // backgroundColor: Colors.teal,
         centerTitle: true,
-        leading: Padding(
-          padding: EdgeInsets.only(left: screenWidth * 0.02),
-          child: GestureDetector(
-            onTap: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            child: CircleAvatar(
-              backgroundColor: Colors.transparent,
-              radius: 20.0,
-              child: ClipOval(
-                child: Image.asset(
-                  'assets/icons/launcher_icon.png',
-                  fit: BoxFit.cover,
-                  width: 50.0,
-                  height: 50,
-                ),
-              ),
-            ),
-          ),
-        ),
-
-        // IconButton(
-        //     onPressed: () {
+        leading: 
+        // Padding(
+        //   padding: EdgeInsets.only(left: screenWidth * 0.02),
+        //   child: GestureDetector(
+        //     onTap: () {
         //       _scaffoldKey.currentState?.openDrawer();
         //     },
-        //     icon: const Icon(
-        //       Icons.notes_rounded,
-        //       size: 30,
-        //     )),
+        //     child: CircleAvatar(
+        //       backgroundColor: Colors.transparent,
+        //       radius: 20.0,
+        //       child: ClipOval(
+        //         child: Image.asset(
+        //           'assets/icons/launcher_icon.png',
+        //           fit: BoxFit.cover,
+        //           width: 50.0,
+        //           height: 50,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        // ),
+
+        IconButton(
+            onPressed: () {
+              _scaffoldKey.currentState?.openDrawer();
+            },
+            icon: const Icon(
+              Icons.notes_rounded,
+              size: 30,
+            )),
         actions: [
           IconButton(
               onPressed: () {
@@ -145,7 +146,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                SizedBox(height: screenHeight * 0.02),
+                SizedBox(height: screenHeight * 0.005),
                 const Text(
                   'Saved Cards',
                   style: TextStyle(fontSize: 22),

@@ -3,6 +3,8 @@ import 'package:business_card_manager/providers/user.dart';
 import 'package:business_card_manager/screens/business_card_scanner.dart';
 import 'package:business_card_manager/screens/search_screen.dart';
 import 'package:business_card_manager/services/auth_service.dart';
+import 'package:business_card_manager/widgets/about_App.dart';
+import 'package:business_card_manager/widgets/help_and_support.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -90,6 +92,32 @@ class DrawerChild extends StatelessWidget {
                   builder: (ctx) => SearchScreen(
                         cards: cards,
                       )));
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.info,
+              color: Colors.teal,
+            ),
+            title: const Text(
+              'About App',
+              style: TextStyle(fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> const AboutApp()));
+            },
+          ),
+          ListTile(
+            leading: const Icon(
+              Icons.support_agent_rounded,
+              color: Colors.teal,
+            ),
+            title: const Text(
+              'Help and Support',
+              style: TextStyle(fontSize: 16),
+            ),
+            onTap: () {
+              Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> const HelpAndSupport()));
             },
           ),
           ListTile(
