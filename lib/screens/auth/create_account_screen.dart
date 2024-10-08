@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:business_card_manager/screens/auth/otp_screen.dart';
+import 'package:business_card_manager/utils/utils.dart';
 import 'package:http/http.dart' as http;
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:flutter/material.dart';
@@ -88,8 +89,6 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     final body =
         json.encode({"fullName": name, "email": email, "password": password});
 
-    print('Sending request with body: $body'); // Add this line for debugging
-
     try {
       final response = await http.post(url, headers: headers, body: body);
 
@@ -103,7 +102,11 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   name: name,
                   password: password,
                 )));
-      } else {
+      }
+      else if(response.statusCode == 400){
+        showSnackBar(context, 'User already exists!');
+      }
+       else {
         print('Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (error) {
