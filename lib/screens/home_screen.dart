@@ -1,4 +1,3 @@
-import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/models/card_model.dart';
 import 'package:business_card_manager/providers/user.dart';
 import 'package:business_card_manager/screens/business_card_scanner.dart';
@@ -203,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       companyName: card.companyName,
                       date: card.date,
                       venue: card.venue,
-                      cardImage: '${Constants.uri}${card.cardImage}',
+                      cardImage: '${card.cardImage}',
                       companyAddress: card.companyAddress,
                       designation: card.designation,
                       category: card.category,
@@ -219,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ));
                 },
                 child: CachedNetworkImage(
-                  imageUrl: '${Constants.uri}${card.cardImage}',
+                  imageUrl: '${card.cardImage}',
                   fit: BoxFit.cover,
                   // placeholder: (context, url) => const CircularProgressIndicator(),
                   errorWidget: (context, url, error) => const Icon(Icons.error),

@@ -1,5 +1,6 @@
 import 'package:business_card_manager/screens/auth/create_account_screen.dart';
 import 'package:business_card_manager/screens/auth/login.dart';
+import 'package:business_card_manager/screens/privacy_policy.dart';
 import 'package:flutter/material.dart';
 
 class OnboardingScreen extends StatelessWidget {
@@ -92,9 +93,14 @@ class OnboardingScreen extends StatelessWidget {
                     Row(
                       children: [
                         SizedBox(width: screenWidth*0.05,),
-                        const Expanded(
-                          child: Text(
-                              'By signing up, you agree to our Terms, Privacy Policy and Cookie use.',),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.of(context).push(MaterialPageRoute(builder: (ctx)=> const PrivacyPolicy()));
+                            },
+                            child: const Text(
+                                'By signing up, you agree to our Terms, Privacy Policy and Cookie use.', style: TextStyle(color: Colors.teal, fontSize: 12),),
+                          ),
                         ),
                       ],
                     )

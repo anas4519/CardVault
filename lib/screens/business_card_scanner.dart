@@ -302,16 +302,18 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         _image!,
                         fit: BoxFit.cover,
                       ),
-                      const SizedBox(height: 12),
+                      SizedBox(height: screenHeight*0.005),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
+                            height: screenHeight*0.04,
+                            width: screenHeight*0.04,
                             decoration: BoxDecoration(
                                 color: Colors.teal, // Set background color
                                 shape: BoxShape.rectangle,
                                 borderRadius:
-                                    BorderRadius.circular(screenWidth * 0.02)),
+                                    BorderRadius.circular(screenWidth * 0.1)),
                             child: IconButton(
                               onPressed: () {
                                 setState(() {
@@ -321,27 +323,32 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               icon: const Icon(
                                 Icons.delete,
                                 color: Colors.white,
+                                size: 16,
                               ),
                             ),
                           ),
+                          SizedBox(width: screenWidth*0.02,),
                           Container(
+                            height: screenHeight*0.04,
+                            width: screenHeight*0.04,
                             decoration: BoxDecoration(
                                 color: Colors.teal, // Set background color
                                 shape: BoxShape.rectangle,
                                 borderRadius:
-                                    BorderRadius.circular(screenWidth * 0.02)),
+                                    BorderRadius.circular(screenWidth * 0.1)),
                             child: IconButton(
                               onPressed: _cropImage,
                               icon: const Icon(
                                 Icons.crop,
                                 color: Colors.white,
+                                size: 16,
                               ),
                             ),
                           ),
                         ],
                       ),
                       SizedBox(
-                        height: screenHeight * 0.02,
+                        height: screenHeight * 0.04,
                       ),
                       Container(
                         decoration: BoxDecoration(
@@ -353,6 +360,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         child: TextButton(
                           onPressed: () => _extractText(_image!),
                           style: ButtonStyle(
+                            
                             foregroundColor:
                                 WidgetStateProperty.all(Colors.black),
                             shape:
@@ -409,7 +417,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                   ),
 
                 SizedBox(height: screenHeight * 0.02),
-                Divider(),
+                // const Divider(color: Colors.teal,),
                 SizedBox(height: screenHeight * 0.04),
 
                 // Form starts here

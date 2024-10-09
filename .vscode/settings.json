@@ -1,3 +1,9 @@
 {
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/9f3ea053-2064-4aca-86a5-fe08a5528042/resourceGroups/cardvault_group/providers/Microsoft.Web/sites/cardvault",
+    "appService.deploySubpath": "server"
 }

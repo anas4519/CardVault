@@ -113,7 +113,7 @@ class _CardDetailsState extends State<CardDetails> {
 
     if (response.statusCode == 200) {
       // Optionally, show a success message
-      showSnackBar(context, 'Card deleted successfully');
+      showSnackBar(context, 'Card deleted successfully!');
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => const HomeScreen()),
