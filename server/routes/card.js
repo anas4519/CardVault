@@ -4,14 +4,31 @@ const path = require("path");
 const fs = require("fs");
 const { Card } = require("../models/card");
 const { User } = require("../models/user");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.resolve(`./public/cards/`));
-  },
-  filename: function (req, file, cb) {
-    const fileName = `${Date.now()}-${file.originalname}`;
-    cb(null, fileName);
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, path.resolve(`./public/cards/`));
+//   },
+//   filename: function (req, file, cb) {
+//     const fileName = `${Date.now()}-${file.originalname}`;
+//     cb(null, fileName);
+//   },
+// });
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "cards",
+    allowedFormats: ["jpg", "jpeg", "png"],
+    public_id: (req, file) => `${Date.now()}-${file.originalname}`,
   },
 });
 
@@ -73,7 +90,7 @@ router.post("/", upload.single("cardImage"), async (req, res) => {
       initialNotes,
       additionalNotes,
       createdBy: user._id,
-      cardImage: `/cards/${req.file.filename}`,
+      cardImage: req.file.path, // Cloudinary URL
     });
 
     return res.json({ success: true, card });
@@ -117,17 +134,24 @@ router.delete("/:id", async (req, res) => {
         .json({ success: false, message: "Card not found" });
     }
 
-    const imagePath = path.join(__dirname, "../public/", card.cardImage);
+    const cardImageUrl = card.cardImage;
+    const imagePublicId = cardImageUrl
+      .split("/")
+      .slice(-2)
+      .join("/")
+      .replace(/\.[^/.]+$/, "");
 
-    fs.unlink(imagePath, async (err) => {
-      if (err) {
-        console.error("Error deleting image:", err);
-        return res
-          .status(500)
-          .json({ success: false, message: "Failed to delete image" });
+    cloudinary.uploader.destroy(imagePublicId, async (error, result) => {
+      if (error) {
+        console.error("Error deleting image from Cloudinary:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to delete image from Cloudinary",
+        });
       }
 
       try {
+        // Delete the card from the database
         const deletedCard = await Card.findByIdAndDelete(id);
         return res.json({
           success: true,
