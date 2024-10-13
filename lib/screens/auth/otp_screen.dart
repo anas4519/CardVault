@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:business_card_manager/constants/constants.dart';
+import 'package:business_card_manager/screens/auth/login.dart';
 import 'package:business_card_manager/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -145,10 +146,14 @@ class _VerifyOtpState extends State<VerifyOtp> {
       // print('Response body: ${response.body}');
 
       if (response.statusCode == 200) {
-        print('Verified!');
-        Navigator.of(context).pop();
+        showSnackBar(context, 'Account created successfully, login with the same credentials!');
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(
+              builder: (context) => const Login()), // The new route to push
+          (Route<dynamic> route) => false, // Remove all previous routes
+        );
       } else {
-        print('Error: ${response.statusCode} - ${response.reasonPhrase}');
+        showSnackBar(context, 'Entered OTP was incorrect!');
       }
     } catch (error) {
       print('Exception: $error');

@@ -40,16 +40,6 @@ class _LoginState extends State<Login> {
     return null;
   }
 
-  String? _validatePassword(String? value) {
-    final passwordRegex =
-        RegExp(r'^(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[!@#\$&*~]).{8,}$');
-    if (value == null || value.isEmpty) {
-      return 'Please enter your password';
-    } else if (!passwordRegex.hasMatch(value)) {
-      return 'Invalid Password';
-    }
-    return null;
-  }
 
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
@@ -150,7 +140,6 @@ class _LoginState extends State<Login> {
                         onPressed: _togglePasswordView,
                       ),
                     ),
-                    validator: _validatePassword,
                   ),
                   SizedBox(height: screenHeight * 0.01),
 
