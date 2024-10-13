@@ -1,6 +1,7 @@
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/screens/card_details.dart';
 import 'package:business_card_manager/models/card_model.dart';
+import 'package:business_card_manager/widgets/tip.dart';
 import 'package:flutter/material.dart';
 
 class SearchScreen extends StatefulWidget {
@@ -28,17 +29,22 @@ class _SearchScreenState extends State<SearchScreen> {
         return card.name.toLowerCase().contains(value.toLowerCase()) ||
             card.companyName.toLowerCase().contains(value.toLowerCase()) ||
             card.industry.toLowerCase().contains(value.toLowerCase()) ||
-            (card.designation?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.designation?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
             card.sector.toLowerCase().contains(value.toLowerCase()) ||
-            (card.category?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
-            (card.initialNotes?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
-            (card.additionalNotes?.toLowerCase() ?? '').contains(value.toLowerCase()) ||
+            (card.category?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
+            (card.initialNotes?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
+            (card.additionalNotes?.toLowerCase() ?? '')
+                .contains(value.toLowerCase()) ||
             card.venue.toLowerCase().contains(value.toLowerCase());
       }).toList();
     });
   }
 
-  void _showFilterMenu(BuildContext context, String filterType, List<String> options) {
+  void _showFilterMenu(
+      BuildContext context, String filterType, List<String> options) {
     showMenu<String>(
       context: context,
       position: const RelativeRect.fromLTRB(100, 100, 0, 0),
@@ -55,11 +61,14 @@ class _SearchScreenState extends State<SearchScreen> {
           displayList = widget.cards.where((card) {
             switch (filterType) {
               case 'Industry':
-                return card.industry.toLowerCase().contains(value.toLowerCase());
+                return card.industry
+                    .toLowerCase()
+                    .contains(value.toLowerCase());
               case 'Sector':
                 return card.sector.toLowerCase().contains(value.toLowerCase());
               case 'Category':
-                return (card.category?.toLowerCase() ?? '').contains(value.toLowerCase());
+                return (card.category?.toLowerCase() ?? '')
+                    .contains(value.toLowerCase());
               default:
                 return false;
             }
@@ -96,13 +105,26 @@ class _SearchScreenState extends State<SearchScreen> {
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
                 ),
                 const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const Tip(
+                            content:
+                                'You can search cards using various criteria like name, company name, industry, designation, sector, category, initial notes, additional notes and venue. Additionally, you can also filter out cards based on various criteria.');
+                      },
+                    );
+                  },
+                  icon: const Icon(Icons.info),
+                ),
                 PopupMenuButton<String>(
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem<String>(
                         value: 'RemoveFilter',
-                        child: const Text('Remove Filter'),
-                        onTap: _removeFilter, // Resets the filter
+                        onTap: _removeFilter,
+                        child: const Text('Remove Filter'), // Resets the filter
                       ),
                       PopupMenuItem<String>(
                         value: 'Sector',
@@ -115,14 +137,16 @@ class _SearchScreenState extends State<SearchScreen> {
                         value: 'Category',
                         child: const Text('Filter by Category'),
                         onTap: () {
-                          _showFilterMenu(context, 'Category', Constants.categories);
+                          _showFilterMenu(
+                              context, 'Category', Constants.categories);
                         },
                       ),
                       PopupMenuItem<String>(
                         value: 'Industry',
                         child: const Text('Filter by Industry'),
                         onTap: () {
-                          _showFilterMenu(context, 'Industry', Constants.industries);
+                          _showFilterMenu(
+                              context, 'Industry', Constants.industries);
                         },
                       ),
                     ];
@@ -191,7 +215,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             category: displayList[index].category,
                             initalNotes: displayList[index].initialNotes,
                             additionalNotes: displayList[index].additionalNotes,
-                            cardImage: '${Constants.uri}${displayList[index].cardImage!}',
+                            cardImage: displayList[index].cardImage!,
                             id: displayList[index].id,
                           ),
                         ),

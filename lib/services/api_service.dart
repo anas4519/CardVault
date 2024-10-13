@@ -134,7 +134,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        showSnackBar(context, 'Card updated successfully!');
+        showSnackBar(context, 'Card updated successfully, refresh to view changes!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');
@@ -161,7 +161,7 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        showSnackBar(context, 'Card updated successfully!');
+        showSnackBar(context, 'Card updated successfully, refresh to view changes!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');

@@ -61,6 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
@@ -71,60 +72,45 @@ class _HomeScreenState extends State<HomeScreen> {
             fontSize: 26,
           ),
         ),
-        // backgroundColor: Colors.teal,
         centerTitle: true,
-        leading: 
-        // Padding(
-        //   padding: EdgeInsets.only(left: screenWidth * 0.02),
-        //   child: GestureDetector(
-        //     onTap: () {
-        //       _scaffoldKey.currentState?.openDrawer();
-        //     },
-        //     child: CircleAvatar(
-        //       backgroundColor: Colors.transparent,
-        //       radius: 20.0,
-        //       child: ClipOval(
-        //         child: Image.asset(
-        //           'assets/icons/launcher_icon.png',
-        //           fit: BoxFit.cover,
-        //           width: 50.0,
-        //           height: 50,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        // ),
-
-        IconButton(
-            onPressed: () {
-              _scaffoldKey.currentState?.openDrawer();
-            },
-            icon: const Icon(
-              Icons.notes_rounded,
-              size: 30,
-            )),
+        leading: IconButton(
+          onPressed: () {
+            _scaffoldKey.currentState?.openDrawer();
+          },
+          icon: const Icon(
+            Icons.notes_rounded,
+            size: 30,
+          ),
+        ),
         actions: [
           IconButton(
-              onPressed: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => SearchScreen(
-                          cards: _cards,
-                        )));
-              },
-              icon: const Icon(
-                Icons.search_sharp,
-                size: 30,
-                color: Colors.black,
-              )),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (ctx) => SearchScreen(cards: _cards),
+                ),
+              );
+            },
+            icon: const Icon(
+              Icons.search_sharp,
+              size: 30,
+              color: Colors.black,
+            ),
+          ),
         ],
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.only(
-            bottom: screenHeight * 0.05, right: screenWidth * 0.03),
+          bottom: screenHeight * 0.05,
+          right: screenWidth * 0.03,
+        ),
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (ctx) => const BusinessCardScanner()));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (ctx) => const BusinessCardScanner(),
+              ),
+            );
           },
           backgroundColor: Colors.teal,
           foregroundColor: Colors.grey[200],
@@ -133,51 +119,64 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
       drawer: Drawer(
-          backgroundColor: Colors.teal[50],
-          child: DrawerChild(
-            cards: _cards,
-          )),
-      body: RefreshIndicator(
-        onRefresh: _refreshCards,
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.all(screenWidth * 0.04),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(height: screenHeight * 0.005),
-                const Text(
-                  'Saved Cards',
-                  style: TextStyle(fontSize: 22),
+        backgroundColor: Colors.teal[50],
+        child: DrawerChild(cards: _cards),
+      ),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          return RefreshIndicator(
+            onRefresh: _refreshCards,
+            child: SingleChildScrollView(
+              physics:
+                  const AlwaysScrollableScrollPhysics(), // Always allow pull-to-refresh
+              child: Padding(
+                padding: EdgeInsets.all(screenWidth * 0.04),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: screenHeight * 0.005),
+                    const Text(
+                      'Saved Cards',
+                      style: TextStyle(fontSize: 22),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
+                    // if(_cards.isEmpty) Center(child: Text('No cards added'),),
+                    _buildCardList(context, screenWidth, screenHeight),
+                  ],
                 ),
-                SizedBox(height: screenHeight * 0.02),
-                _buildCardList(context, screenWidth, screenHeight),
-              ],
+              ),
             ),
-          ),
-        ),
+          );
+        },
       ),
     );
   }
 
   Widget _buildCardList(
-      BuildContext context, double screenWidth, double screenHeight) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: Colors.teal));
-    } else if (_error != null) {
-      return Center(child: Text(_error!));
-    } else if (_cards.isEmpty) {
-      return const Center(child: Text('No cards added yet.'));
-    } else {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: _cards
-            .map((card) =>
-                _buildCardItem(card, context, screenWidth, screenHeight))
-            .toList(),
-      );
-    }
+    BuildContext context, double screenWidth, double screenHeight) {
+  if (_isLoading) {
+    return const Center(child: CircularProgressIndicator(color: Colors.teal));
+  } else if (_error != null) {
+    return Center(child: Text(_error!));
+  } else if (_cards.isEmpty) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        SizedBox(height: screenHeight*0.3,),
+        const Center(child: Text('No cards added yet.')),
+      ],
+    );
+  } else {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: _cards
+          .map((card) =>
+              _buildCardItem(card, context, screenWidth, screenHeight))
+          .toList(),
+    );
   }
+}
+
 
   Widget _buildCardItem(CardModel card, BuildContext context,
       double screenWidth, double screenHeight) {
@@ -192,37 +191,37 @@ class _HomeScreenState extends State<HomeScreen> {
           child: ClipRRect(
             borderRadius: BorderRadius.circular(screenWidth * 0.03),
             child: InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (ctx) => CardDetails(
-                      id: card.id,
-                      name: card.name,
-                      industry: card.industry,
-                      sector: card.sector,
-                      companyName: card.companyName,
-                      date: card.date,
-                      venue: card.venue,
-                      cardImage: '${card.cardImage}',
-                      companyAddress: card.companyAddress,
-                      designation: card.designation,
-                      category: card.category,
-                      personalAddress: card.personalAddress,
-                      website: card.website,
-                      email: card.email,
-                      mobile: card.mobile,
-                      telephone: card.telephone,
-                      whatsapp: card.whatsapp,
-                      initalNotes: card.initialNotes,
-                      additionalNotes: card.additionalNotes,
-                    ),
-                  ));
-                },
-                child: CachedNetworkImage(
-                  imageUrl: '${card.cardImage}',
-                  fit: BoxFit.cover,
-                  // placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                )),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (ctx) => CardDetails(
+                    id: card.id,
+                    name: card.name,
+                    industry: card.industry,
+                    sector: card.sector,
+                    companyName: card.companyName,
+                    date: card.date,
+                    venue: card.venue,
+                    cardImage: '${card.cardImage}',
+                    companyAddress: card.companyAddress,
+                    designation: card.designation,
+                    category: card.category,
+                    personalAddress: card.personalAddress,
+                    website: card.website,
+                    email: card.email,
+                    mobile: card.mobile,
+                    telephone: card.telephone,
+                    whatsapp: card.whatsapp,
+                    initalNotes: card.initialNotes,
+                    additionalNotes: card.additionalNotes,
+                  ),
+                ));
+              },
+              child: CachedNetworkImage(
+                imageUrl: '${card.cardImage}',
+                fit: BoxFit.cover,
+                errorWidget: (context, url, error) => const Icon(Icons.error),
+              ),
+            ),
           ),
         ),
         SizedBox(height: screenHeight * 0.02),

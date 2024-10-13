@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:business_card_manager/services/api_service.dart';
 import 'package:business_card_manager/constants/constants.dart';
 import 'package:business_card_manager/utils/utils.dart';
+import 'package:business_card_manager/widgets/tip.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_gemini/flutter_gemini.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
 import 'package:image_cropper/image_cropper.dart';
@@ -24,6 +24,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _companyNameController = TextEditingController();
+  final TextEditingController _designationController = TextEditingController();
   final TextEditingController _companyAddressController =
       TextEditingController();
   final TextEditingController _personalAddressController =
@@ -43,7 +44,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
   String? _selectedCategory;
   String? _selectedIndustry;
   String? _selectedSector;
-  String? _selectedDesignation;
 
   Future<void> _pickImage() async {
     final XFile? image = await _picker.pickImage(
@@ -203,6 +203,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
               classifiedData['Company Address'] ?? '';
           _personalAddressController.text =
               classifiedData['Personal Address'] ?? '';
+          _designationController.text = classifiedData['Designation'] ?? '';
           _emailController.text = classifiedData['Email'] ?? '';
           _websiteController.text = classifiedData['Website'] ?? '';
           _telephoneController.text = classifiedData['Telephone'] ?? '';
@@ -215,10 +216,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
           _selectedSector = classifiedData['Sector'] != null &&
                   Constants.sectors.contains(classifiedData['Sector'])
               ? classifiedData['Sector']
-              : null;
-          _selectedDesignation = classifiedData['Designation'] != null &&
-                  Constants.designations.contains(classifiedData['Designation'])
-              ? classifiedData['Designation']
               : null;
         });
       } else {
@@ -287,6 +284,19 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
         title: const Text('Scan Card'),
         centerTitle: true,
         backgroundColor: Colors.teal[50],
+        actions: [
+          IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const Tip(
+                          content:
+                              'Make sure you upload a straight and clear image of the business card.');
+                    });
+              },
+              icon: const Icon(Icons.lightbulb_outline_rounded))
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -302,13 +312,13 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         _image!,
                         fit: BoxFit.cover,
                       ),
-                      SizedBox(height: screenHeight*0.005),
+                      SizedBox(height: screenHeight * 0.005),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Container(
-                            height: screenHeight*0.04,
-                            width: screenHeight*0.04,
+                            height: screenHeight * 0.04,
+                            width: screenHeight * 0.04,
                             decoration: BoxDecoration(
                                 color: Colors.teal, // Set background color
                                 shape: BoxShape.rectangle,
@@ -327,10 +337,12 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               ),
                             ),
                           ),
-                          SizedBox(width: screenWidth*0.02,),
+                          SizedBox(
+                            width: screenWidth * 0.02,
+                          ),
                           Container(
-                            height: screenHeight*0.04,
-                            width: screenHeight*0.04,
+                            height: screenHeight * 0.04,
+                            width: screenHeight * 0.04,
                             decoration: BoxDecoration(
                                 color: Colors.teal, // Set background color
                                 shape: BoxShape.rectangle,
@@ -360,7 +372,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         child: TextButton(
                           onPressed: () => _extractText(_image!),
                           style: ButtonStyle(
-                            
                             foregroundColor:
                                 WidgetStateProperty.all(Colors.black),
                             shape:
@@ -425,6 +436,8 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      const Align(alignment: Alignment.centerLeft, child: Text('Fields marked with * are compulosry', style: TextStyle(fontSize: 12),)),
+                      SizedBox(height: screenHeight * 0.02),
                       DropdownButtonFormField<String>(
                         decoration: InputDecoration(
                           labelText: 'Category *',
@@ -541,31 +554,35 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       ),
                       const SizedBox(height: 20),
 
-                      DropdownButtonFormField<String>(
+                      // DropdownButtonFormField<String>(
+                      //   decoration: InputDecoration(
+                      //     labelText: 'Designation',
+                      //     border: OutlineInputBorder(
+                      //         borderRadius:
+                      //             BorderRadius.circular(screenWidth * 0.02)),
+                      //   ),
+                      //   value: _selectedDesignation,
+                      //   items: Constants.designations.map((String designation) {
+                      //     return DropdownMenuItem<String>(
+                      //       value: designation,
+                      //       child: Text(designation),
+                      //     );
+                      //   }).toList(),
+                      //   onChanged: (String? newValue) {
+                      //     setState(() {
+                      //       _selectedDesignation = newValue;
+                      //     });
+                      //   },
+                      // ),
+
+                      TextFormField(
+                        controller: _designationController,
                         decoration: InputDecoration(
                           labelText: 'Designation',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
                         ),
-                        value: _selectedDesignation,
-                        items: Constants.designations.map((String designation) {
-                          return DropdownMenuItem<String>(
-                            value: designation,
-                            child: Text(designation),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedDesignation = newValue;
-                          });
-                        },
-                        // validator: (value) {
-                        //   if (value == null) {
-                        //     return 'Please select a designation';
-                        //   }
-                        //   return null;
-                        // },
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       TextFormField(
@@ -576,12 +593,6 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
                         ),
-                        // validator: (value) {
-                        //   if (value == null || value.isEmpty) {
-                        //     return 'Please enter the company address';
-                        //   }
-                        //   return null;
-                        // },
                       ),
                       SizedBox(height: screenHeight * 0.02),
                       TextFormField(
@@ -720,7 +731,7 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                               _selectedDate!,
                               _image!,
                               context,
-                              designation: _selectedDesignation,
+                              designation: _designationController.text,
                               companyAddress: _companyAddressController.text.isNotEmpty
                                   ? _companyAddressController.text
                                   : null,
