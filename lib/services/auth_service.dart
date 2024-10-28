@@ -9,23 +9,23 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthService {
-  Future<void> getUserData(
-    BuildContext context,
-  ) async {
+  Future<void> getUserData(BuildContext context) async {
     try {
       var userProvider = Provider.of<UserProvider>(context, listen: false);
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String? token = prefs.getString('x-auth-token');
 
-      if (token == null) {
+      if (token == null || token.isEmpty) {
+        // Token is either null or empty, so we set it to an empty string
         prefs.setString('x-auth-token', '');
+        return; // Exit early since there's no valid token
       }
 
       var tokenRes = await http.post(
         Uri.parse('${Constants.uri}/user/tokenIsValid'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
-          'x-auth-token': token!,
+          'x-auth-token': token,
         },
       );
 
@@ -36,13 +36,15 @@ class AuthService {
           Uri.parse('${Constants.uri}/user/'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
-            'x-auth-token': token
+            'x-auth-token': token,
           },
         );
         userProvider.setUser(userRes.body);
+      } else {
+        print("Token is invalid");
       }
     } catch (e) {
-      showSnackBar(context, e.toString());
+      print("Error fetching user data: $e");
     }
   }
 
@@ -55,10 +57,3 @@ class AuthService {
         (route) => false);
   }
 }
-// appBar: AppBar(
-      //   title: Text(
-      //     widget.companyName,
-      //     style: const TextStyle(fontSize: 16),
-      //   ),
-      //   centerTitle: true,
-      // ),

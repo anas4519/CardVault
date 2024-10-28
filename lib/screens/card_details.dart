@@ -93,24 +93,34 @@ class _CardDetailsState extends State<CardDetails> {
   }
 
   Widget _buildDetailColumn(String label, String value) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-        ),
-        SelectableText(value),
-      ],
+    return Container(
+      width: MediaQuery.of(context).size.width *
+          0.7, // Limit width to leave space for icon
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4),
+          SelectableText(
+            value,
+            style: const TextStyle(height: 1.5),
+            maxLines: null, // Allow multiple lines
+          ),
+        ],
+      ),
     );
   }
 
   Future<void> _deleteCard() async {
+    showLoadingDialog(context, 'Deleting Card...');
     final response = await http.delete(
       Uri.parse(
           '${Constants.uri}/card/${widget.id}'), // Adjust the URL as needed
     );
-
+    Navigator.of(context).pop();
     if (response.statusCode == 200) {
       // Optionally, show a success message
       showSnackBar(context, 'Card deleted successfully!');
@@ -151,7 +161,7 @@ class _CardDetailsState extends State<CardDetails> {
     );
 
     if (confirmed == true) {
-      _deleteCard(); // Call the delete function if confirmed
+      _deleteCard();
     }
   }
 
@@ -294,7 +304,8 @@ class _CardDetailsState extends State<CardDetails> {
                       fit: BoxFit.cover,
                       placeholder: (context, url) =>
                           const Center(child: CircularProgressIndicator()),
-                      errorWidget: (context, url, error) => const Icon(Icons.error),
+                      errorWidget: (context, url, error) =>
+                          const Icon(Icons.error),
                     )),
               ),
             ),
@@ -341,83 +352,103 @@ class _CardDetailsState extends State<CardDetails> {
                   ],
                   if (widget.email?.isNotEmpty ?? false) ...[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailColumn('Email', widget.email!),
-                        const Spacer(),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width *
+                                0.04), // Spacing
                         IconButton(
-                            onPressed: () => _sendEmail(widget.email!),
-                            icon: const Icon(
-                              Icons.email,
-                              color: Colors.black,
-                            ))
+                          onPressed: () => _sendEmail(widget.email!),
+                          icon: const Icon(
+                            Icons.email,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                     const Divider(color: Colors.teal),
                   ],
                   if (widget.website?.isNotEmpty ?? false) ...[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailColumn('Website', widget.website!),
-                        const Spacer(),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width *
+                                0.04), // Spacing
                         IconButton(
-                            onPressed: () => _launchURL(widget.website!),
-                            icon: const Icon(
-                              Icons.public,
-                              color: Colors.black,
-                            ))
+                          onPressed: () => _launchURL(widget.website!),
+                          icon: const Icon(
+                            Icons.public,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                     const Divider(color: Colors.teal),
                   ],
                   if (widget.telephone?.isNotEmpty ?? false) ...[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailColumn('Telephone', widget.telephone!),
-                        const Spacer(),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width *
+                                0.04), // Spacing
                         IconButton(
-                            onPressed: () => _makePhoneCall(widget.telephone!),
-                            icon: const Icon(
-                              Icons.call,
-                              color: Colors.black,
-                            ))
+                          onPressed: () => _makePhoneCall(widget.telephone!),
+                          icon: const Icon(
+                            Icons.phone,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                     const Divider(color: Colors.teal),
                   ],
                   if (widget.mobile?.isNotEmpty ?? false) ...[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailColumn('Mobile Number', widget.mobile!),
-                        const Spacer(),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width *
+                                0.04), // Spacing
                         IconButton(
-                            onPressed: () => _makePhoneCall(widget.mobile!),
-                            icon: const Icon(
-                              Icons.call,
-                              color: Colors.black,
-                            ))
+                          onPressed: () => _makePhoneCall(widget.mobile!),
+                          icon: const Icon(
+                            Icons.phone,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                     const Divider(color: Colors.teal),
                   ],
                   if (widget.whatsapp?.isNotEmpty ?? false) ...[
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildDetailColumn('WhatsApp Number', widget.whatsapp!),
-                        const Spacer(),
+                        SizedBox(
+                            width: MediaQuery.of(context).size.width *
+                                0.04), // Spacing
                         IconButton(
-                            onPressed: () => _launchURL(widget.whatsapp!),
-                            icon: const Icon(
-                              Icons.call,
-                              color: Colors.black,
-                            ))
+                          onPressed: () => _makePhoneCall(widget.whatsapp!),
+                          icon: const Icon(
+                            Icons.email,
+                            color: Colors.black,
+                          ),
+                        )
                       ],
                     ),
                     const Divider(color: Colors.teal),
                   ],
-                  _buildDetailColumn('Card Recieved Date',
+                  _buildDetailColumn('Card Received Date',
                       "${widget.date.day}-${widget.date.month}-${widget.date.year}"),
                   const Divider(color: Colors.teal),
-                  _buildDetailColumn('Card Recieved Venue', widget.venue),
+                  _buildDetailColumn('Card Received Venue', widget.venue),
                   if (widget.category?.isNotEmpty ?? false) ...[
                     const Divider(color: Colors.teal),
                     _buildDetailColumn('Category', widget.category!),

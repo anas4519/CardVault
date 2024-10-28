@@ -1,4 +1,4 @@
-package com.example.business_card_manager
+package com.cardvault.cardvault
 
 import io.flutter.embedding.android.FlutterActivity
 

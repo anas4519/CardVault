@@ -312,9 +312,9 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                         _image!,
                         fit: BoxFit.cover,
                       ),
-                      SizedBox(height: screenHeight * 0.005),
+                      SizedBox(height: screenHeight * 0.01),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Container(
                             height: screenHeight * 0.04,
@@ -675,14 +675,14 @@ class _BusinessCardScannerState extends State<BusinessCardScanner> {
                       TextFormField(
                         controller: _cardRecievedVenueCotroller,
                         decoration: InputDecoration(
-                          labelText: 'Card Recieved Venue *',
+                          labelText: 'Card Received Venue *',
                           border: OutlineInputBorder(
                               borderRadius:
                                   BorderRadius.circular(screenWidth * 0.02)),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter the venue where card was recieved';
+                            return 'Please enter the venue where card was received';
                           }
                           return null;
                         },

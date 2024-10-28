@@ -126,6 +126,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
   }
 
   Future<void> checkOTP(BuildContext context, String otp) async {
+    showLoadingDialog(context, 'Verifying OTP...');
     final url = Uri.parse('${Constants.uri}/user/verify-otp');
     final headers = {
       'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ class _VerifyOtpState extends State<VerifyOtp> {
     });
 
     // print('Sending request with body: $body'); // Add this line for debugging
-
+    Navigator.of(context).pop();
     try {
       final response = await http.post(url, headers: headers, body: body);
 
@@ -156,7 +157,8 @@ class _VerifyOtpState extends State<VerifyOtp> {
         showSnackBar(context, 'Entered OTP was incorrect!');
       }
     } catch (error) {
-      print('Exception: $error');
+      Navigator.of(context).pop();
+      showSnackBar(context, 'Error verifying OTP!');
     }
   }
 

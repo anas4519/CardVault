@@ -12,32 +12,31 @@ import 'package:provider/provider.dart';
 
 class ApiService {
   Future<List<CardModel>> fetchUserCards(String userID) async {
-  try {
-    final response =
-        await http.get(Uri.parse('${Constants.uri}/card/user/$userID'));
+    try {
+      final response =
+          await http.get(Uri.parse('${Constants.uri}/card/user/$userID'));
 
-    if (response.statusCode == 200) {
-      List<dynamic> data = json.decode(response.body);
+      if (response.statusCode == 200) {
+        List<dynamic> data = json.decode(response.body);
 
-      // Check if the data is empty or not
-      if (data.isEmpty) {
+        // Check if the data is empty or not
+        if (data.isEmpty) {
+          print("No cards found for the user");
+          return [];
+        }
+
+        return data.map((json) => CardModel.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
         print("No cards found for the user");
         return [];
+      } else {
+        throw Exception('Failed to load cards: ${response.statusCode}');
       }
-
-      return data.map((json) => CardModel.fromJson(json)).toList();
-    } else if (response.statusCode == 404) {
-      print("No cards found for the user");
-      return [];
-    } else {
-      throw Exception('Failed to load cards: ${response.statusCode}');
+    } catch (e) {
+      print("Error fetching cards: $e");
+      throw Exception('Failed to load cards');
     }
-  } catch (e) {
-    print("Error fetching cards: $e");
-    throw Exception('Failed to load cards');
   }
-}
-
 
   Future<void> postData(
       String name,
@@ -59,6 +58,7 @@ class ApiService {
       String? category,
       String? initialNotes,
       String? additionalNotes}) async {
+    showLoadingDialog(context, 'Adding new card...');
     final url =
         Uri.parse('${Constants.uri}/card/'); // Replace with your actual URL
 
@@ -103,7 +103,7 @@ class ApiService {
 
       // Send the request
       var response = await request.send();
-
+      Navigator.of(context).pop();
       if (response.statusCode == 200) {
         showSnackBar(context, 'Card added successfully!');
         Navigator.of(context).pushAndRemoveUntil(
@@ -115,11 +115,13 @@ class ApiService {
             context, 'Failed to add card. Status code: ${response.statusCode}');
       }
     } catch (e) {
-      showSnackBar(context, 'Error: $e');
+      Navigator.of(context).pop();
+      showSnackBar(context, 'Error adding card.');
     }
   }
 
-  Future<void> updateInitialNotes(String note, String id, BuildContext context) async {
+  Future<void> updateInitialNotes(
+      String note, String id, BuildContext context) async {
     final String apiUrl = '${Constants.uri}/card/$id/initialNotes';
 
     try {
@@ -134,7 +136,8 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        showSnackBar(context, 'Card updated successfully, refresh to view changes!');
+        showSnackBar(
+            context, 'Card updated successfully, refresh to view changes!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');
@@ -146,7 +149,8 @@ class ApiService {
     }
   }
 
-  Future<void> updateAdditionalNotes(String note, String id, BuildContext context) async {
+  Future<void> updateAdditionalNotes(
+      String note, String id, BuildContext context) async {
     final String apiUrl = '${Constants.uri}/card/$id/additionalNotes';
 
     try {
@@ -161,7 +165,8 @@ class ApiService {
       );
 
       if (response.statusCode == 200) {
-        showSnackBar(context, 'Card updated successfully, refresh to view changes!');
+        showSnackBar(
+            context, 'Card updated successfully, refresh to view changes!');
       } else {
         print(
             'Failed to update initial notes. Status Code: ${response.statusCode}');

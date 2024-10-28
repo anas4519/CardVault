@@ -27,20 +27,19 @@ class _ForgotPassword1State extends State<ForgotPassword1> {
   }
 
   Future<void> postData(String email, BuildContext context) async {
+    showLoadingDialog(context, 'Verifying Details...');
     final url = Uri.parse('${Constants.uri}/user/generateOTPToChangePassword');
     final headers = {
       'Content-Type': 'application/json',
     };
     final body = json.encode({"email": email});
 
-    print('Sending request with body: $body'); // Add this line for debugging
 
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
+    
+      Navigator.of(context).pop();
       if (response.statusCode == 200) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (ctx) => ForgotPassword2(
@@ -52,7 +51,8 @@ class _ForgotPassword1State extends State<ForgotPassword1> {
         print('Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (error) {
-      print('Exception: $error');
+      Navigator.of(context).pop();
+      showSnackBar(context, 'Error verifying details!');
     }
   }
 

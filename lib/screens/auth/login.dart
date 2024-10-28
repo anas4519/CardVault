@@ -40,7 +40,6 @@ class _LoginState extends State<Login> {
     return null;
   }
 
-
   void _login() {
     if (_formKey.currentState?.validate() ?? false) {
       postData(_emailController.text, _passwordController.text, context);
@@ -49,6 +48,7 @@ class _LoginState extends State<Login> {
 
   Future<void> postData(
       String email, String password, BuildContext context) async {
+    showLoadingDialog(context, 'Logging you in...');
     final url = Uri.parse('${Constants.uri}/user/signin');
     final headers = {
       'Content-Type': 'application/json',
@@ -59,7 +59,7 @@ class _LoginState extends State<Login> {
       var userProvider = Provider.of<UserProvider>(context, listen: false);
       final navigator = Navigator.of(context);
       final response = await http.post(url, headers: headers, body: body);
-
+      Navigator.of(context).pop();
       if (response.statusCode == 200) {
         SharedPreferences prefs = await SharedPreferences.getInstance();
 
@@ -77,7 +77,7 @@ class _LoginState extends State<Login> {
         showSnackBar(context, jsonDecode(response.body)['error']);
       }
     } catch (error) {
-      print('Error: $error');
+      Navigator.of(context).pop();
       Navigator.of(context).pop();
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text('Error: $error'),

@@ -72,15 +72,22 @@ class HelpAndSupport extends StatelessWidget {
             SizedBox(height: screenHeight * 0.01),
             Row(
               children: [
-                const SelectableText(
-                    'Email: versevibe45@gmail.com',
-                    style: TextStyle(fontSize: 16, height: 1.5,),
+                Expanded(
+                  child: Padding(
+                    padding: EdgeInsets.only(
+                        right: MediaQuery.of(context).size.width * 0.04),
+                    child: const SelectableText(
+                      'Email: versevibe45@gmail.com',
+                      style: TextStyle(fontSize: 16, height: 1.5),
+                      maxLines: null, // Allow text to wrap to multiple lines
+                    ),
                   ),
-                  const Spacer(),
-                  IconButton(onPressed: ()=> _sendEmail('versevibe45@gmail.com'), icon: const Icon(Icons.email, color: Colors.teal,))
+                ),
+                IconButton(
+                    onPressed: () => _sendEmail('versevibe45@gmail.com'),
+                    icon: const Icon(Icons.email, color: Colors.teal))
               ],
             ),
-            
           ],
         ),
       ),

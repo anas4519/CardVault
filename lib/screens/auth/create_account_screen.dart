@@ -82,6 +82,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
 
   Future<void> postData(
       String name, String email, String password, BuildContext context) async {
+    showLoadingDialog(context, 'Verifying Details...');
     final url = Uri.parse('${Constants.uri}/user/signup');
     final headers = {
       'Content-Type': 'application/json',
@@ -92,9 +93,7 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
     try {
       final response = await http.post(url, headers: headers, body: body);
 
-      print('Response status: ${response.statusCode}');
-      print('Response body: ${response.body}');
-
+      Navigator.of(context).pop();
       if (response.statusCode == 200) {
         Navigator.of(context).push(MaterialPageRoute(
             builder: (ctx) => VerifyOtp(
@@ -102,15 +101,15 @@ class _CreateAccountScreenState extends State<CreateAccountScreen> {
                   name: name,
                   password: password,
                 )));
-      }
-      else if(response.statusCode == 400){
+      } else if (response.statusCode == 400) {
         showSnackBar(context, 'User already exists!');
-      }
-       else {
+      } else {
         print('Error: ${response.statusCode} - ${response.reasonPhrase}');
       }
     } catch (error) {
-      print('Exception: $error');
+      Navigator.of(context).pop();
+      showSnackBar(context, 'Error creating account!');
+      
     }
   }
 

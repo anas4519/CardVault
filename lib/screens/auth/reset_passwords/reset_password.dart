@@ -54,6 +54,7 @@ class _ResetPasswordState extends State<ResetPassword> {
 
 
 Future<void> _changePassword(String email, String password) async {
+  showLoadingDialog(context, 'Changing Password...');
   final url = Uri.parse('${Constants.uri}/user/resetPassword'); // Replace with your actual API URL
 
   try {
@@ -67,9 +68,8 @@ Future<void> _changePassword(String email, String password) async {
         'password': password,
       }),
     );
-
+    Navigator.of(context).pop();
     if (response.statusCode == 200) {
-      // Password changed successfully
       showSnackBar(context, 'Password changed successfully!');
       Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (ctx) => const Login()),
@@ -80,7 +80,8 @@ Future<void> _changePassword(String email, String password) async {
       showSnackBar(context, responseBody['status'] ?? 'Failed to change password');
     }
   } catch (error) {
-    showSnackBar(context, 'Error: $error');
+    Navigator.of(context).pop();
+    showSnackBar(context, 'Error changing password!');
   }
 }
 

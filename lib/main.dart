@@ -37,10 +37,14 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _initApp() async {
-    await authService
-        .getUserData(context); // Fetch user data during splash screen
-    FlutterNativeSplash
-        .remove(); // Remove the splash screen after loading user data
+    try {
+      await authService.getUserData(context);
+    } catch (e) {
+      print("Error fetching user data: $e");
+    } finally {
+      FlutterNativeSplash
+          .remove(); // Ensure splash screen is removed in case of errors
+    }
   }
 
   @override
