@@ -22,4 +22,5 @@ In today's fast-paced world, managing business contacts can be challenging, espe
 
 ## Installation
 
-- CardVault will be available on Google Play Store soon.
+- CardVault is now available on Google Play Store. Download it from the link below and share your valuable feedback.
+Link : https://shorturl.at/7u5wf
